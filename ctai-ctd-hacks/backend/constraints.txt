@@ -1,0 +1,12 @@
+# Force use of pre-compiled wheels to avoid compilation issues
+# These constraints are for development environments that need ML capabilities
+# For production deployment, use requirements-prod.txt which excludes ML packages
+
+# For pandas compatibility with Python 3.11
+pandas==2.1.4
+
+# For scikit-learn compatibility
+scikit-learn==1.4.2
+
+# For numpy compatibility (pandas dependency)
+numpy<2.0.0

@@ -1,0 +1,186 @@
+{
+	"info": {
+		"name": "Smart Buy Dashboard API",
+		"description": "Complete API testing collection for ML predictions and vendor scraping",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "1. API Overview",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/",
+					"host": ["{{base_url}}"],
+					"path": [""]
+				}
+			}
+		},
+		{
+			"name": "2. Get Demo Data",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/demo",
+					"host": ["{{base_url}}"],
+					"path": ["demo"]
+				}
+			}
+		},
+		{
+			"name": "3. API Documentation",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/api-docs",
+					"host": ["{{base_url}}"],
+					"path": ["api-docs"]
+				}
+			}
+		},
+		{
+			"name": "4. Basic Material Prediction",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectType\": \"Commercial Construction\",\n  \"size\": \"Medium (₹1Cr–₹10Cr)\",\n  \"state\": \"Maharashtra\",\n  \"city\": \"Mumbai\",\n  \"volume\": \"50000000\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/predict",
+					"host": ["{{base_url}}"],
+					"path": ["predict"]
+				}
+			}
+		},
+		{
+			"name": "5. Detailed Prediction Test",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectType\": \"Industrial Infrastructure\",\n  \"size\": \"Large (>₹10Cr)\",\n  \"state\": \"Karnataka\",\n  \"city\": \"Bengaluru\",\n  \"volume\": \"125000000\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/test-prediction",
+					"host": ["{{base_url}}"],
+					"path": ["test-prediction"]
+				}
+			}
+		},
+		{
+			"name": "6. Basic Vendor Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/vendors?material=steel&location=mumbai",
+					"host": ["{{base_url}}"],
+					"path": ["vendors"],
+					"query": [
+						{
+							"key": "material",
+							"value": "steel"
+						},
+						{
+							"key": "location",
+							"value": "mumbai"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "7. Detailed Vendor Search",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/vendors-detailed?material=concrete&location=pune&max_results=10",
+					"host": ["{{base_url}}"],
+					"path": ["vendors-detailed"],
+					"query": [
+						{
+							"key": "material",
+							"value": "concrete"
+						},
+						{
+							"key": "location",
+							"value": "pune"
+						},
+						{
+							"key": "max_results",
+							"value": "10"
+						}
+					]
+				}
+			}
+		},
+		{
+			"name": "8. Complete Workflow Test",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"projectType\": \"Residential Development\",\n  \"size\": \"Small (<₹1Cr)\",\n  \"state\": \"Maharashtra\",\n  \"city\": \"Pune\",\n  \"volume\": \"8500000\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/complete-workflow",
+					"host": ["{{base_url}}"],
+					"path": ["complete-workflow"]
+				}
+			}
+		},
+		{
+			"name": "9. Model Status Check",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/model-info",
+					"host": ["{{base_url}}"],
+					"path": ["model-info"]
+				}
+			}
+		},
+		{
+			"name": "10. Train ML Models",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{base_url}}/train-models",
+					"host": ["{{base_url}}"],
+					"path": ["train-models"]
+				}
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "http://localhost:8000"
+		}
+	]
+}

@@ -1,0 +1,11 @@
+# Requirements file specifically for Render deployment
+# This ensures all dependencies are correctly specified
+
+fastapi==0.115.0
+uvicorn[standard]==0.30.0
+pymongo==4.8.0
+python-dotenv==1.0.1
+beautifulsoup4==4.12.0
+requests==2.32.0
+fake-useragent==1.5.0
+pydantic==2.8.0
