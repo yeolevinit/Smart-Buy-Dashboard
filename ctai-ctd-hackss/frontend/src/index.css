@@ -1,0 +1,261 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* AI Procurement Dashboard Design System - Modern Professional Theme */
+
+@layer base {
+  :root {
+    /* Base colors - Clean neutral palette */
+    --background: 0 0% 100%;
+    --foreground: 224 71% 4%;
+
+    /* Surface colors - Elevated cards and panels */
+    --card: 0 0% 100%;
+    --card-foreground: 224 71% 4%;
+
+    /* Interactive overlays */
+    --popover: 0 0% 100%;
+    --popover-foreground: 224 71% 4%;
+
+    /* Primary brand - Professional indigo */
+    --primary: 239 84% 67%;
+    --primary-foreground: 0 0% 98%;
+    --primary-hover: 239 84% 62%;
+    --primary-active: 239 84% 57%;
+
+    /* Secondary accents - Subtle backgrounds */
+    --secondary: 220 14% 96%;
+    --secondary-foreground: 220 9% 46%;
+    --secondary-hover: 220 14% 93%;
+
+    /* Muted elements - Disabled states and subtle text */
+    --muted: 220 14% 96%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Accent highlights - Success and info states */
+    --accent: 220 14% 96%;
+    --accent-foreground: 220 9% 15%;
+
+    /* Status colors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 0 0% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 0 0% 98%;
+
+    /* Form and UI elements */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 239 84% 67%;
+
+    /* Enhanced design tokens */
+    --radius: 0.75rem;
+    --radius-lg: 1rem;
+    --radius-xl: 1.5rem;
+
+    /* Sidebar specific */
+    --sidebar-background: 220 18% 97%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-active: 239 84% 67%;
+    --sidebar-active-background: 239 84% 95%;
+
+    /* Shadows and elevations */
+    --shadow-sm: 0 1px 2px 0 hsl(220 13% 0% / 0.05);
+    --shadow: 0 1px 3px 0 hsl(220 13% 0% / 0.1), 0 1px 2px -1px hsl(220 13% 0% / 0.1);
+    --shadow-lg: 0 10px 15px -3px hsl(220 13% 0% / 0.1), 0 4px 6px -4px hsl(220 13% 0% / 0.1);
+    --shadow-xl: 0 20px 25px -5px hsl(220 13% 0% / 0.1), 0 8px 10px -6px hsl(220 13% 0% / 0.1);
+
+    /* Gradients for modern look */
+    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%), hsl(239 84% 75%));
+    --gradient-subtle: linear-gradient(135deg, hsl(220 14% 98%), hsl(220 14% 96%));
+
+    /* Animation timing */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-quick: all 0.15s ease;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark mode - Professional dark theme */
+    --background: 224 71% 4%;
+    --foreground: 210 20% 98%;
+
+    /* Dark surfaces */
+    --card: 224 71% 6%;
+    --card-foreground: 210 20% 98%;
+
+    --popover: 224 71% 6%;
+    --popover-foreground: 210 20% 98%;
+
+    /* Primary remains vibrant in dark mode */
+    --primary: 239 84% 67%;
+    --primary-foreground: 224 71% 4%;
+    --primary-hover: 239 84% 72%;
+    --primary-active: 239 84% 77%;
+
+    /* Dark mode secondary */
+    --secondary: 215 25% 12%;
+    --secondary-foreground: 210 20% 98%;
+    --secondary-hover: 215 25% 15%;
+
+    /* Dark muted elements */
+    --muted: 215 25% 12%;
+    --muted-foreground: 217 10% 65%;
+
+    /* Dark accent */
+    --accent: 215 25% 12%;
+    --accent-foreground: 210 20% 98%;
+
+    /* Dark status colors */
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 210 20% 98%;
+    --success: 142 76% 36%;
+    --success-foreground: 210 20% 98%;
+    --warning: 38 92% 50%;
+    --warning-foreground: 224 71% 4%;
+
+    /* Dark borders and inputs */
+    --border: 215 25% 18%;
+    --input: 215 25% 18%;
+    --ring: 239 84% 67%;
+
+    /* Dark sidebar */
+    --sidebar-background: 224 71% 5%;
+    --sidebar-border: 215 25% 18%;
+    --sidebar-active: 239 84% 67%;
+    --sidebar-active-background: 239 84% 15%;
+
+    /* Dark shadows */
+    --shadow-sm: 0 1px 2px 0 hsl(0 0% 0% / 0.15);
+    --shadow: 0 1px 3px 0 hsl(0 0% 0% / 0.2), 0 1px 2px -1px hsl(0 0% 0% / 0.2);
+    --shadow-lg: 0 10px 15px -3px hsl(0 0% 0% / 0.25), 0 4px 6px -4px hsl(0 0% 0% / 0.25);
+    --shadow-xl: 0 20px 25px -5px hsl(0 0% 0% / 0.3), 0 8px 10px -6px hsl(0 0% 0% / 0.3);
+
+    /* Dark gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(239 84% 67%), hsl(239 84% 60%));
+    --gradient-subtle: linear-gradient(135deg, hsl(224 71% 6%), hsl(215 25% 12%));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    zoom: 0.95;
+  }
+
+  /* Custom scrollbar for webkit browsers */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted/30;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+}
+
+@layer components {
+  /* Dashboard specific component classes */
+  .dashboard-card {
+    @apply bg-card border border-border rounded-lg shadow-sm;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors;
+  }
+
+  .sidebar-item-active {
+    @apply bg-sidebar-active-background text-sidebar-active;
+  }
+
+  .sidebar-item-inactive {
+    @apply text-muted-foreground hover:text-foreground hover:bg-muted/50;
+  }
+
+  .tab-content {
+    @apply p-6 space-y-6;
+  }
+
+  .data-table {
+    @apply w-full border-collapse border border-border rounded-lg overflow-hidden;
+  }
+
+  .data-table th {
+    @apply bg-muted/50 px-4 py-3 text-left text-sm font-medium text-muted-foreground;
+  }
+
+  .data-table td {
+    @apply px-4 py-3 text-sm border-t border-border;
+  }
+
+  .status-badge {
+    @apply inline-flex items-center px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-success {
+    @apply bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400;
+  }
+
+  .status-warning {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400;
+  }
+
+  .status-danger {
+    @apply bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400;
+  }
+
+  .gradient-button {
+    @apply bg-gradient-to-r from-primary to-primary-hover text-primary-foreground;
+  }
+}
