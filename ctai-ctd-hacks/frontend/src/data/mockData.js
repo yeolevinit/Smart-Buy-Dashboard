@@ -1,40 +1,12 @@
 // Mock data for the AI Procurement Management Platform
 
-export interface Material {
-  id: string;
-  name: string;
-  quantity: number;
-  unit: string;
-  cost: number;
-  category: string;
-}
 
-export interface Vendor {
-  id: string;
-  name: string;
-  location: string;
-  contact: string;
-  email: string;
-  materials: string[];
-  rating: number;
-}
 
-export interface ProcurementItem {
-  id: string;
-  material: string;
-  orderBy: Date;
-  deliveryStart: Date;
-  deliveryEnd: Date;
-  status: 'critical' | 'warning' | 'on-track';
-  vendor: string;
-}
 
-export interface ChatMessage {
-  id: string;
-  message: string;
-  isUser: boolean;
-  timestamp: Date;
-}
+
+
+
+
 
 // Mock materials prediction data
 export const mockMaterials = [
@@ -160,7 +132,7 @@ export const mockChatMessages = [
 ];
 
 // Mock API functions
-export const mockApiCall = async (endpoint, data?): Promise<any> => {
+export const mockApiCall = async (endpoint, data?) => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
   

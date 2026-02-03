@@ -66,12 +66,26 @@ function removeTypeScript(content) {
     newContent = newContent.replace(/(export\s+)?type\s+\w+(\s*<[^>]+>)?\s*=\s*[^;{]+;/g, '');
 
     // 4. Remove generic type arguments in function calls/definitions: <T>
-    // Be careful with JSX element tags <div>.
-    // Only remove <T> if it looks like a type param.
-    // e.g. function<T>() or const x = <T>() =>
-    // This is hard with regex. 
+    newContent = newContent.replace(/<T>/g, '');
 
-    // 5. Cleanup "extends React.Component..." in lines if leftover
+    // 5. Remove return types: : Promise<...>
+    // Greedy match until { or ;? No, matching balanced <> is hard.
+    // But usually it is : Promise<Type> so we can try basic one.
+    newContent = newContent.replace(/:\s*Promise<[^>]+>/g, '');
+    newContent = newContent.replace(/:\s*Promise<\{[^}]+\}>/g, ''); // Handle Promise<{...}>
+
+    // 6. Remove class property types: private name: string;
+    // Remove "private "
+    newContent = newContent.replace(/private\s+/g, '');
+    // Remove ": string;" or ": type;"
+    newContent = newContent.replace(/:\s*\w+(\[\])?;/g, ';');
+
+    // 7. Remove method arguments types that might have been missed
+    // This is risky with regex.
+
+    // 8. Remove pure declarations in classes that are just types?
+    // e.g. "baseUrl;" is fine in modern JS (Field declarations)
+    // "baseUrl: string;" -> "baseUrl;"
 
     return newContent;
 }

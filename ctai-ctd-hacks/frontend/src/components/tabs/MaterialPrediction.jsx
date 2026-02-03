@@ -6,24 +6,7 @@ import { type PredictionResponse, type MaterialPrediction as APIMaterialPredicti
 import { Package, IndianRupee, TrendingUp, Activity } from "lucide-react";
 
 // Define the Project interface locally since we removed it from mockData
-interface Project {
-  id: string;
-  name: string;
-  type: string;
-  size: string;
-  state: string;
-  city: string;
-  volume: number;
-  status: 'active' | 'completed' | 'planning';
-  isPredicted: boolean;
-  createdAt: Date;
-  timeline: {
-    design: { start: Date; end: Date; status: 'completed' | 'in-progress' | 'pending' };
-    development: { start: Date; end: Date; status: 'completed' | 'in-progress' | 'pending' };
-    procurement: { start: Date; end: Date; status: 'completed' | 'in-progress' | 'pending' };
-    installation: { start: Date; end: Date; status: 'completed' | 'in-progress' | 'pending' };
-  };
-}
+
 
 // Define mock materials locally since we removed them from mockData
 const mockMaterials = [
@@ -54,7 +37,7 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
   const totalQuantity = materials.reduce((sum, material) => sum + material.quantity, 0);
   
   // Ensure we don't divide by zero
-  const avgCostPerUnit = totalQuantity > 0 ? Math.round(totalCost / totalQuantity) : 0;
+  const avgCostPerUnit = totalQuantity > 0 ? Math.round(totalCost / totalQuantity) ;
 
   const barChartData = materials.map(material => ({
     name: material.name.split(' ')[0], // Shortened names for chart

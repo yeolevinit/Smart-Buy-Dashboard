@@ -16,24 +16,7 @@ import { Vendor, apiService } from "@/services/api";
 import { type PredictionResponse } from "@/services/api";
 
 // Define the Project interface locally since we removed it from mockData
-interface Project {
-  id: string;
-  name: string;
-  type: string;
-  size: string;
-  state: string;
-  city: string;
-  volume: number;
-  status: 'active' | 'completed' | 'planning';
-  isPredicted: boolean;
-  createdAt: Date;
-  timeline: {
-    design: { start: Date; end: Date; status: 'completed' | 'in-progress' | 'pending' };
-    development: { start: Date; end: Date; status: 'completed' | 'in-progress' | 'pending' };
-    procurement: { start: Date; end: Date; status: 'completed' | 'in-progress' | 'pending' };
-    installation: { start: Date; end: Date; status: 'completed' | 'in-progress' | 'pending' };
-  };
-}
+
 
 
 export function VendorsTab({ project, showPredictionResults = false, predictionData }) {
@@ -48,11 +31,11 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
     deliveryDate: Date | null;
     deliveryStatus: "Not Started" | "In Progress" | "Delivered";
     agreementStatus: "Finalized" | "Pending Confirmation";
-    totalAmount: number;
-    paymentMade: number;
+    totalAmount;
+    paymentMade;
     paymentDueDate: Date | null;
-    notes: string;
-    logs: { date: Date; quantity: number; note?: string }[];
+    notes;
+    logs: { date; quantity; note?: string }[];
   }>>({});
   const [manageMaterial, setManageMaterial] = useState(null);
   const { toast } = useToast();
@@ -903,7 +886,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
               notes: "", 
               logs: [] 
             };
-            const unitPrice = m ? Math.floor((m.cost || 0) / (m.quantity || 1)) : 0;
+            const unitPrice = m ? Math.floor((m.cost || 0) / (m.quantity || 1)) ;
             const paymentDue = mgmt.totalAmount - mgmt.paymentMade;
             
             return (
@@ -981,7 +964,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                             type="date"
                             value={mgmt.deliveryDate ? mgmt.deliveryDate.toISOString().split('T')[0] : ''}
                             onChange={(e) => {
-                              const newDate = e.target.value ? new Date(e.target.value) : null;
+                              const newDate = e.target.value ? new Date(e.target.value) ;
                               setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial!] ?? { paymentStatus: "Pending", deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount, paymentMade, paymentDueDate, notes: "", logs: [] }), deliveryDate: newDate } }));
                               
                               // Update localStorage for ProcurementTimeline integration

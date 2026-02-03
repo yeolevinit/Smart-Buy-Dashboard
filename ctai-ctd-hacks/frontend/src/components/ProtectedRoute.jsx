@@ -6,9 +6,7 @@ const isAuthenticated = () => {
   return !!user;
 };
 
-type ProtectedRouteProps = {
-  children: React.ReactElement;
-};
+
 
 const ProtectedRoute = ({ children }) => {
   if (!isAuthenticated()) {

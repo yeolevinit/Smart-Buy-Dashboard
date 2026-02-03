@@ -2,15 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { apiService, Vendor, VendorSearchParams, VendorUpdateData } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 
-export interface UseVendorsReturn {
-  vendors: Vendor[];
-  loading: boolean;
-  error: string | null;
-  searchVendors: (params) => Promise<void>;
-  finalizeVendor: (vendorId) => Promise<void>;
-  updateVendor: (vendorId, data) => Promise<void>;
-  refreshVendors: () => Promise<void>;
-}
+
 
 export function useVendors() {
   const [vendors, setVendors] = useState([]);

@@ -6,16 +6,9 @@ import { cn } from "@/lib/utils";
 // Format: { THEME_NAME: CSS_SELECTOR }
 const THEMES = { light: "", dark: ".dark" };
 
-export type ChartConfig = {
-  [k in string]: {
-    label?: React.ReactNode;
-    icon?: React.ComponentType;
-  } & ({ color?: string; theme?: never } | { color?: never; theme: Record<keyof typeof THEMES, string> });
-};
 
-type ChartContextProps = {
-  config: ChartConfig;
-};
+
+
 
 const ChartContext = React.createContext(null);
 
@@ -32,7 +25,7 @@ function useChart() {
 const ChartContainer = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
-    config: ChartConfig;
+    config;
     children: React.ComponentProps<typeof RechartsPrimitive.ResponsiveContainer>["children"];
   }
 >(({ id, className, children, config, ...props }, ref) => {
@@ -58,7 +51,7 @@ const ChartContainer = React.forwardRef<
 });
 ChartContainer.displayName = "Chart";
 
-const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
+const ChartStyle = ({ id, config }: { id; config: ChartConfig }) => {
   const colorConfig = Object.entries(config).filter(([_, config]) => config.theme || config.color);
 
   if (!colorConfig.length) {
@@ -75,7 +68,7 @@ ${prefix} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
     const color = itemConfig.theme?.[theme as keyof typeof itemConfig.theme] || itemConfig.color;
-    return color ? `  --color-${key}: ${color};` : null;
+    return color ? `  --color-${key}: ${color};` ;
   })
   .join("\n")}
 }
@@ -92,19 +85,19 @@ const ChartTooltip = RechartsPrimitive.Tooltip;
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
   {
-    active?: boolean;
+    active?;
     payload?: Array<any>;
-    label?: any;
-    hideLabel?: boolean;
-    hideIndicator?: boolean;
+    label?;
+    hideLabel?;
+    hideIndicator?;
     indicator?: "line" | "dot" | "dashed";
-    nameKey?: string;
-    labelKey?: string;
+    nameKey?;
+    labelKey?;
     labelFormatter?: (label, payload) => React.ReactNode;
-    labelClassName?: string;
+    labelClassName?;
     formatter?: (value, name, item, index, payload) => React.ReactNode;
-    color?: string;
-    className?: string;
+    color?;
+    className?;
   }
 >(
   (
@@ -239,8 +232,8 @@ const ChartLegendContent = React.forwardRef<
   React.ComponentProps<"div"> & {
     payload?: Array<any>;
     verticalAlign?: "top" | "bottom";
-    hideIcon?: boolean;
-    nameKey?: string;
+    hideIcon?;
+    nameKey?;
   }
 >(({ className, hideIcon = false, payload, verticalAlign = "bottom", nameKey }, ref) => {
   const { config } = useChart();
@@ -291,7 +284,7 @@ function getPayloadConfigFromPayload(config, payload, key) {
   const payloadPayload =
     "payload" in payload && typeof payload.payload === "object" && payload.payload !== null
       ? payload.payload
-      : undefined;
+      ;
 
   let configLabelKey = key;
 

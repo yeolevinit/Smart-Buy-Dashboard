@@ -19,15 +19,7 @@ const SIDEBAR_WIDTH_MOBILE = "18rem";
 const SIDEBAR_WIDTH_ICON = "3rem";
 const SIDEBAR_KEYBOARD_SHORTCUT = "b";
 
-type SidebarContext = {
-  state: "expanded" | "collapsed";
-  open: boolean;
-  setOpen: (open) => void;
-  openMobile: boolean;
-  setOpenMobile: (open) => void;
-  isMobile: boolean;
-  toggleSidebar: () => void;
-};
+
 
 const SidebarContext = React.createContext(null);
 
@@ -43,8 +35,8 @@ function useSidebar() {
 const SidebarProvider = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
-    defaultOpen?: boolean;
-    open?: boolean;
+    defaultOpen?;
+    open?;
     onOpenChange?: (open) => void;
   }
 >(({ defaultOpen = true, open, onOpenChange, className, style, children, ...props }, ref) => {
@@ -57,7 +49,7 @@ const SidebarProvider = React.forwardRef<
   const open = openProp ?? _open;
   const setOpen = React.useCallback(
     (value: boolean | ((value) => boolean)) => {
-      const openState = typeof value === "function" ? value(open) : value;
+      const openState = typeof value === "function" ? value(open) ;
       if (setOpenProp) {
         setOpenProp(openState);
       } else {
@@ -436,8 +428,8 @@ const sidebarMenuButtonVariants = cva(
 const SidebarMenuButton = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & {
-    asChild?: boolean;
-    isActive?: boolean;
+    asChild?;
+    isActive?;
     tooltip?: string | React.ComponentProps<typeof TooltipContent>;
   } & VariantProps<typeof sidebarMenuButtonVariants>
 >(({ asChild = false, isActive = false, variant = "default", size = "default", tooltip, className, ...props }, ref) => {
@@ -477,8 +469,8 @@ SidebarMenuButton.displayName = "SidebarMenuButton";
 const SidebarMenuAction = React.forwardRef<
   HTMLButtonElement,
   React.ComponentProps<"button"> & {
-    asChild?: boolean;
-    showOnHover?: boolean;
+    asChild?;
+    showOnHover?;
   }
 >(({ className, asChild = false, showOnHover = false, ...props }, ref) => {
   const Comp = asChild ? Slot : "button";
@@ -528,7 +520,7 @@ SidebarMenuBadge.displayName = "SidebarMenuBadge";
 const SidebarMenuSkeleton = React.forwardRef<
   HTMLDivElement,
   React.ComponentProps<"div"> & {
-    showIcon?: boolean;
+    showIcon?;
   }
 >(({ className, showIcon = false, ...props }, ref) => {
   // Random width between 50 to 90%.
@@ -582,9 +574,9 @@ SidebarMenuSubItem.displayName = "SidebarMenuSubItem";
 const SidebarMenuSubButton = React.forwardRef<
   HTMLAnchorElement,
   React.ComponentProps<"a"> & {
-    asChild?: boolean;
+    asChild?;
     size?: "sm" | "md";
-    isActive?: boolean;
+    isActive?;
   }
 >(({ asChild = false, size = "md", isActive, className, ...props }, ref) => {
   const Comp = asChild ? Slot : "a";

@@ -6,10 +6,10 @@ const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1000000;
 
 type ToasterToast = ToastProps & {
-  id: string;
+  id;
   title?: React.ReactNode;
   description?: React.ReactNode;
-  action?: ToastActionElement;
+  action?;
 };
 
 const actionTypes = {
@@ -26,12 +26,12 @@ function genId() {
   return count.toString();
 }
 
-type ActionType = typeof actionTypes;
+
 
 type Action =
   | {
       type: ActionType["ADD_TOAST"];
-      toast: ToasterToast;
+      toast;
     }
   | {
       type: ActionType["UPDATE_TOAST"];
@@ -127,7 +127,7 @@ function dispatch(action) {
   });
 }
 
-type Toast = Omit<ToasterToast, "id">;
+
 
 function toast({ ...props }) {
   const id = genId();

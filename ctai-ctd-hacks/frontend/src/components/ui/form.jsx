@@ -12,7 +12,7 @@ type FormFieldContextValue<
   TFieldValues extends FieldValues = FieldValues,
   TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
 > = {
-  name: TName;
+  name;
 };
 
 const FormFieldContext = React.createContext({} as FormFieldContextValue);
@@ -53,9 +53,7 @@ const useFormField = () => {
   };
 };
 
-type FormItemContextValue = {
-  id: string;
-};
+
 
 const FormItemContext = React.createContext({} as FormItemContextValue);
 
@@ -111,7 +109,7 @@ FormDescription.displayName = "FormDescription";
 const FormMessage = React.forwardRef<HTMLParagraphElement, React.HTMLAttributes<HTMLParagraphElement>>(
   ({ className, children, ...props }, ref) => {
     const { error, formMessageId } = useFormField();
-    const body = error ? String(error?.message) : children;
+    const body = error ? String(error?.message) ;
 
     if (!body) {
       return null;
