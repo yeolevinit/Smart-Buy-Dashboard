@@ -63,15 +63,15 @@ export function ProcurementTimeline({ project }) {
       material: item.material,
       vendor: item.vendor,
       category: item.material.includes('Steel') || item.material.includes('Concrete') ? 'Structural' :
-                item.material.includes('HVAC') || item.material.includes('Electrical') ? 'MEP' :
-                item.material.includes('Glass') || item.material.includes('Fire') ? 'Exterior' : 'Other',
+        item.material.includes('HVAC') || item.material.includes('Electrical') ? 'MEP' :
+          item.material.includes('Glass') || item.material.includes('Fire') ? 'Exterior' : 'Other',
       orderBy: item.orderBy,
       deliveryStart: item.deliveryStart,
       deliveryEnd: item.deliveryEnd,
       status: item.status,
       leadTime: differenceInDays(item.deliveryStart, item.orderBy),
       notes: item.status === 'critical' ? 'Critical path item - monitor closely' :
-             item.status === 'warning' ? 'Potential delay risk' : 'On track'
+        item.status === 'warning' ? 'Potential delay risk' : 'On track'
     }));
     setEditableItems(initialItems);
   }, []);
@@ -84,10 +84,10 @@ export function ProcurementTimeline({ project }) {
   const filteredItems = useMemo(() => {
     return enhancedItems.filter(item => {
       const matchesSearch = item.material.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           item.vendor.toLowerCase().includes(searchTerm.toLowerCase());
+        item.vendor.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesCategory = categoryFilter === 'all' || item.category === categoryFilter;
       const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
-      
+
       return matchesSearch && matchesCategory && matchesStatus;
     });
   }, [enhancedItems, searchTerm, categoryFilter, statusFilter]);
@@ -101,12 +101,12 @@ export function ProcurementTimeline({ project }) {
     const today = new Date();
     const minDate = new Date(Math.min(...sortedItems.map(item => item.orderBy.getTime())));
     const maxDate = new Date(Math.max(...sortedItems.map(item => item.deliveryEnd.getTime())));
-    
+
     return sortedItems.map((item, index) => {
       const startOffset = differenceInDays(item.orderBy, minDate);
       const duration = differenceInDays(item.deliveryEnd, item.orderBy);
       const deliveryDuration = differenceInDays(item.deliveryEnd, item.deliveryStart);
-      
+
       return {
         name: item.material,
         vendor: item.vendor,
@@ -133,29 +133,28 @@ export function ProcurementTimeline({ project }) {
   // Editing functions
   const startEditing = (itemId) => {
     setEditingItem(itemId);
-    setEditableItems(prev => prev.map(item => 
-      item.id === itemId 
-        ? { 
-            ...item, 
-            tempOrderBy: format(item.orderBy, 'yyyy-MM-dd'),
-            tempDeliveryStart: format(item.deliveryStart, 'yyyy-MM-dd'),
-            tempDeliveryEnd: format(item.deliveryEnd, 'yyyy-MM-dd')
-          }
-        
+    setEditableItems(prev => prev.map(item =>
+      item.id === itemId
+        ? {
+          ...item,
+          tempOrderBy: format(item.orderBy, 'yyyy-MM-dd'),
+          tempDeliveryStart: format(item.deliveryStart, 'yyyy-MM-dd'),
+          tempDeliveryEnd: format(item.deliveryEnd, 'yyyy-MM-dd')
+        }
+        : item
     ));
   };
 
   const cancelEditing = (itemId) => {
     setEditingItem(null);
-    setEditableItems(prev => prev.map(item => 
-      item.id === itemId 
-        ? { 
-            ...item, 
-            tempOrderBy,
-            tempDeliveryStart,
-            tempDeliveryEnd: undefined
-          }
-        
+    setEditableItems(prev => prev.map(item =>
+      item.id === itemId
+        ? {
+          ...item,
+          tempOrderBy: undefined,
+          tempDeliveryStart: undefined,
+        }
+        : item
     ));
   };
 
@@ -196,19 +195,18 @@ export function ProcurementTimeline({ project }) {
     }
 
     // Update the item
-    setEditableItems(prev => prev.map(i => 
-      i.id === itemId 
+    setEditableItems(prev => prev.map(i =>
+      i.id === itemId
         ? {
-            ...i,
-            orderBy,
-            deliveryStart,
-            deliveryEnd,
-            leadTime: differenceInDays(newDeliveryStart, newOrderBy),
-            tempOrderBy,
-            tempDeliveryStart,
-            tempDeliveryEnd: undefined
-          }
-        
+          ...i,
+          orderBy: newOrderBy,
+          deliveryStart: newDeliveryStart,
+          deliveryEnd: newDeliveryEnd,
+          leadTime: differenceInDays(newDeliveryStart, newOrderBy),
+          tempOrderBy: undefined,
+          tempDeliveryStart: undefined,
+        }
+        : i
     ));
 
     setEditingItem(null);
@@ -218,11 +216,11 @@ export function ProcurementTimeline({ project }) {
     });
   };
 
-  const updateTempValue = (itemId, field: 'tempOrderBy' | 'tempDeliveryStart' | 'tempDeliveryEnd', value) => {
-    setEditableItems(prev => prev.map(item => 
-      item.id === itemId 
+  const updateTempValue = (itemId, field, value) => {
+    setEditableItems(prev => prev.map(item =>
+      item.id === itemId
         ? { ...item, [field]: value }
-        
+        : item
     ));
   };
 
@@ -231,7 +229,7 @@ export function ProcurementTimeline({ project }) {
     // This would typically come from a context or props from VendorsTab
     // For now, we'll simulate vendor data integration
     const finalizedVendors = JSON.parse(localStorage.getItem('finalizedVendors') || '{}');
-    
+
     if (Object.keys(finalizedVendors).length > 0) {
       setEditableItems(prev => prev.map(item => {
         const vendorData = finalizedVendors[item.material];
@@ -239,7 +237,7 @@ export function ProcurementTimeline({ project }) {
           const deliveryDate = new Date(vendorData.deliveryDate);
           const deliveryStart = new Date(deliveryDate.getTime() - 7 * 24 * 60 * 60 * 1000); // 7 days before
           const deliveryEnd = new Date(deliveryDate.getTime() + 7 * 24 * 60 * 60 * 1000); // 7 days after
-          
+
           return {
             ...item,
             deliveryStart,
@@ -250,7 +248,7 @@ export function ProcurementTimeline({ project }) {
         }
         return item;
       }));
-      
+
       toast({
         title: "Vendor Data Synced",
         description: "Delivery dates updated from finalized vendors",
@@ -320,12 +318,12 @@ export function ProcurementTimeline({ project }) {
                 />
               </div>
             </div>
-            
+
             {showFilters && (
               <motion.div
-                initial={{ opacity, height: 0 }}
-                animate={{ opacity, height: 'auto' }}
-                exit={{ opacity, height: 0 }}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
                 className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t"
               >
                 <div>
@@ -422,12 +420,12 @@ export function ProcurementTimeline({ project }) {
                     const leadTime = differenceInDays(item.deliveryStart, item.orderBy);
                     const orderDays = calculateTimeToOrder(item.orderBy);
                     const isEditing = editingItem === item.id;
-                    
+
                     return (
                       <motion.tr
                         key={item.id}
-                        initial={{ opacity, y: 10 }}
-                        animate={{ opacity, y: 0 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.2, delay: index * 0.1 }}
                         className="hover:bg-muted/50 transition-colors"
                       >
@@ -572,8 +570,8 @@ export function ProcurementTimeline({ project }) {
                     return (
                       <motion.div
                         key={item.name}
-                        initial={{ opacity, x: -20 }}
-                        animate={{ opacity, x: 0 }}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.3, delay: index * 0.1 }}
                         className="relative h-12 flex items-center group"
                       >
@@ -586,17 +584,17 @@ export function ProcurementTimeline({ project }) {
                         {/* Timeline Bar */}
                         <div className="flex-1 relative h-8 bg-muted rounded-lg overflow-hidden">
                           {/* Order to delivery start (gray) */}
-                          <div 
+                          <div
                             className="absolute top-0 left-0 h-full bg-gray-300 dark:bg-gray-600"
-                            style={{ 
+                            style={{
                               width: `${Math.max(10, (item.startOffset / Math.max(...ganttData.map(d => d.startOffset + d.duration)) * 80))}%`
                             }}
                           />
-                          
+
                           {/* Delivery window (colored) */}
-                          <div 
+                          <div
                             className="absolute top-0 h-full rounded-r-lg"
-                            style={{ 
+                            style={{
                               left: `${Math.max(10, (item.startOffset / Math.max(...ganttData.map(d => d.startOffset + d.duration)) * 80))}%`,
                               width: `${Math.max(5, (item.deliveryDuration / Math.max(...ganttData.map(d => d.startOffset + d.duration)) * 20))}%`,
                               backgroundColor: getBarColor(item.status)
@@ -653,8 +651,8 @@ export function ProcurementTimeline({ project }) {
               {sortedItems.filter(item => item.status === 'critical').map((item, index) => (
                 <motion.div
                   key={item.id}
-                  initial={{ opacity, y: 10 }}
-                  animate={{ opacity, y: 0 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.2, delay: index * 0.1 }}
                   className="flex items-center gap-3 p-3 bg-destructive/10 rounded-lg border border-destructive/20"
                 >

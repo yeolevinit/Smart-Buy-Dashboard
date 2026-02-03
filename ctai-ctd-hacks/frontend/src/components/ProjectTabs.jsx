@@ -78,8 +78,8 @@ export function ProjectTabs({ project }) {
 
   return (
     <motion.div
-      initial={{ opacity, y: 20 }}
-      animate={{ opacity, y: 0 }}
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
       className="h-full flex flex-col"
     >
@@ -120,8 +120,8 @@ export function ProjectTabs({ project }) {
           {!predictionCompleted && (
             <TabsContent value="input" className="mt-0 h-full overflow-y-auto">
               <motion.div
-                initial={{ opacity, x: 20 }}
-                animate={{ opacity, x: 0 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
                 transition={{ duration: 0.2 }}
                 className="h-full"
               >
@@ -137,8 +137,8 @@ export function ProjectTabs({ project }) {
             <>
               <TabsContent value="prediction" className="mt-0 h-full overflow-y-auto">
                 <motion.div
-                  initial={{ opacity, x: 20 }}
-                  animate={{ opacity, x: 0 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2 }}
                   className="h-full"
                 >
@@ -152,8 +152,8 @@ export function ProjectTabs({ project }) {
 
               <TabsContent value="vendors" className="mt-0 h-full overflow-y-auto">
                 <motion.div
-                  initial={{ opacity, x: 20 }}
-                  animate={{ opacity, x: 0 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2 }}
                   className="h-full"
                 >
@@ -167,8 +167,8 @@ export function ProjectTabs({ project }) {
 
               <TabsContent value="timeline" className="mt-0 h-full overflow-y-auto">
                 <motion.div
-                  initial={{ opacity, x: 20 }}
-                  animate={{ opacity, x: 0 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2 }}
                   className="h-full"
                 >
@@ -178,8 +178,8 @@ export function ProjectTabs({ project }) {
 
               <TabsContent value="schedule" className="mt-0 h-full overflow-y-auto">
                 <motion.div
-                  initial={{ opacity, x: 20 }}
-                  animate={{ opacity, x: 0 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2 }}
                   className="h-full"
                 >
@@ -189,8 +189,8 @@ export function ProjectTabs({ project }) {
 
               <TabsContent value="chatbot" className="mt-0 h-full overflow-y-auto">
                 <motion.div
-                  initial={{ opacity, x: 20 }}
-                  animate={{ opacity, x: 0 }}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
                   transition={{ duration: 0.2 }}
                   className="h-full"
                 >

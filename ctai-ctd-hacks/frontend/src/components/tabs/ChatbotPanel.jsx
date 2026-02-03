@@ -48,7 +48,7 @@ export function ChatbotPanel({ project }) {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = async (e) => {
     e.preventDefault();
     
     if (!inputValue.trim() || isLoading) return;
@@ -119,9 +119,9 @@ export function ChatbotPanel({ project }) {
               {messages.map((message, index) => (
                 <motion.div
                   key={message.id}
-                  initial={{ opacity, y: 10 }}
-                  animate={{ opacity, y: 0 }}
-                  exit={{ opacity, y: -10 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                   className={`flex gap-3 ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}
                 >
@@ -154,8 +154,8 @@ export function ChatbotPanel({ project }) {
               
               {isLoading && (
                 <motion.div
-                  initial={{ opacity, y: 10 }}
-                  animate={{ opacity, y: 0 }}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
                   className="flex gap-3"
                 >
                   <div className="p-2 rounded-full bg-muted text-muted-foreground">
@@ -181,8 +181,8 @@ export function ChatbotPanel({ project }) {
                 {suggestedQuestions.slice(0, 3).map((question, index) => (
                   <motion.button
                     key={index}
-                    initial={{ opacity, x: -20 }}
-                    animate={{ opacity, x: 0 }}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
                     transition={{ duration: 0.2, delay: index * 0.1 }}
                     onClick={() => setInputValue(question)}
                     className="text-left p-2 text-sm bg-muted/50 hover:bg-muted rounded-lg transition-colors"

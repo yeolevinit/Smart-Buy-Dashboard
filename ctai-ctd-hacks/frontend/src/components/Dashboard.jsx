@@ -83,7 +83,7 @@ export function Dashboard() {
     }
   };
 
-  const handleCreateProject = async (newProjectData: Omit<Project, 'id' | 'createdAt' | 'timeline' | 'isPredicted'>) => {
+  const handleCreateProject = async (newProjectData) => {
     setIsLoading(true);
     console.log("Creating new project:", newProjectData);
 
@@ -205,8 +205,8 @@ function EmptyState({ onCreateProject }) {
   return (
     <div className="h-full flex items-center justify-center p-8">
       <motion.div
-        initial={{ opacity, y: 20 }}
-        animate={{ opacity, y: 0 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="text-center max-w-2xl mx-auto"
       >

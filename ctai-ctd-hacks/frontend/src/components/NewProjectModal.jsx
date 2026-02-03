@@ -63,7 +63,7 @@ export function NewProjectModal({ onCreateProject }) {
     'West Bengal',
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Prevent duplicate submissions
@@ -146,8 +146,8 @@ export function NewProjectModal({ onCreateProject }) {
         <motion.form
           onSubmit={handleSubmit}
           className="space-y-6"
-          initial={{ opacity, y: 20 }}
-          animate={{ opacity, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
           <div className="space-y-4">

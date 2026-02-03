@@ -61,8 +61,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
       {/* AI Prediction Results Banner */}
       {showPredictionResults && (
         <motion.div
-          initial={{ opacity, y: -20 }}
-          animate={{ opacity, y: 0 }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
           <Card className="dashboard-card border-primary/20 bg-primary/5">
@@ -85,8 +85,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <motion.div
-          initial={{ opacity, y: 20 }}
-          animate={{ opacity, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
           <Card className="dashboard-card">
@@ -102,8 +102,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
         </motion.div>
 
         <motion.div
-          initial={{ opacity, y: 20 }}
-          animate={{ opacity, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
           <Card className="dashboard-card">
@@ -119,8 +119,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
         </motion.div>
 
         <motion.div
-          initial={{ opacity, y: 20 }}
-          animate={{ opacity, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.3 }}
         >
           <Card className="dashboard-card">
@@ -136,8 +136,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
         </motion.div>
 
         <motion.div
-          initial={{ opacity, y: 20 }}
-          animate={{ opacity, y: 0 }}
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.4 }}
         >
           <Card className="dashboard-card">
@@ -156,8 +156,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
       {/* Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <motion.div
-          initial={{ opacity, x: -20 }}
-          animate={{ opacity, x: 0 }}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.5 }}
         >
           <Card className="dashboard-card">
@@ -187,8 +187,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
         </motion.div>
 
         <motion.div
-          initial={{ opacity, x: 20 }}
-          animate={{ opacity, x: 0 }}
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
           transition={{ duration: 0.3, delay: 0.6 }}
         >
           <Card className="dashboard-card">
@@ -226,8 +226,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
 
       {/* Materials Table */}
       <motion.div
-        initial={{ opacity, y: 20 }}
-        animate={{ opacity, y: 0 }}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.7 }}
       >
         <Card className="dashboard-card">
@@ -251,8 +251,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
                   {materials.map((material, index) => (
                     <motion.tr
                       key={material.id}
-                      initial={{ opacity, x: -20 }}
-                      animate={{ opacity, x: 0 }}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
                       transition={{ duration: 0.2, delay: 0.1 * index }}
                       className="border-b hover:bg-muted/50"
                     >

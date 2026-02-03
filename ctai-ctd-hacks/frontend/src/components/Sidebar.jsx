@@ -45,8 +45,8 @@ export function Sidebar({ projects, selectedProject, onSelectProject, onCreatePr
                 <Building className="h-5 w-5 text-primary-foreground" />
               </div>
               <motion.div
-                initial={{ opacity, x: -20 }}
-                animate={{ opacity, x: 0 }}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
                 className="text-lg font-semibold"
               >
                 ProcureAI India
@@ -83,9 +83,9 @@ export function Sidebar({ projects, selectedProject, onSelectProject, onCreatePr
                   {projects.map((project, index) => (
                     <motion.div
                       key={project.id}
-                      initial={{ opacity, y: 20 }}
-                      animate={{ opacity, y: 0 }}
-                      exit={{ opacity, y: -20 }}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -20 }}
                       transition={{ delay: index * 0.1 }}
                     >
                       <ProjectCard

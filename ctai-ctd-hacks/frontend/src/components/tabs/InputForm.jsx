@@ -51,7 +51,7 @@ export function InputForm({ project, onPredictionComplete }) {
     'West Bengal',
   ];
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
 
@@ -102,8 +102,8 @@ export function InputForm({ project, onPredictionComplete }) {
           <motion.form
             onSubmit={handleSubmit}
             className="space-y-6"
-            initial={{ opacity, y: 20 }}
-            animate={{ opacity, y: 0 }}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: 0.1 }}
           >
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

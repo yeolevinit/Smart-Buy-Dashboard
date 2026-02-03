@@ -7,8 +7,8 @@ const TOAST_REMOVE_DELAY = 1000000;
 
 type ToasterToast = ToastProps & {
   id;
-  title?: React.ReactNode;
-  description?: React.ReactNode;
+  title?;
+  description?;
   action?;
 };
 

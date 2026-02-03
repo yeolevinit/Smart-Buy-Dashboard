@@ -355,8 +355,8 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
       {/* AI Prediction Results Banner */}
       {showPredictionResults && (
         <motion.div
-          initial={{ opacity, y: -20 }}
-          animate={{ opacity, y: 0 }}
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
           className="mb-6"
         >
           <Card className="dashboard-card border-primary/20 bg-primary/5">
@@ -440,7 +440,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                   const hasVendorAssigned = !!vendorAssigned;
                   
                   return (
-                    <motion.tr key={`material-${m.id}-${m.name}-${idx}`} initial={{ opacity, y: 6 }} animate={{ opacity, y: 0 }} transition={{ duration: 0.2, delay: idx * 0.03 }} className={hasVendorAssigned ? "bg-emerald-50 dark:bg-emerald-900/20" : undefined}>
+                    <motion.tr key={`material-${m.id}-${m.name}-${idx}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: idx * 0.03 }} className={hasVendorAssigned ? "bg-emerald-50 dark:bg-emerald-900/20" : undefined}>
                       <TableCell className="font-medium flex items-center gap-2">
                         {hasVendorAssigned && <CheckCircle2 className="h-4 w-4 text-emerald-600" />}
                         {m.name}
@@ -544,8 +544,8 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
               {vendors.map((vendor, index) => (
                 <motion.div
                   key={`vendor-${vendor.id || index}-${vendor.vendor}-${vendor.item_name || 'no-item'}-${index}`}
-                  initial={{ opacity, y: 20 }}
-                  animate={{ opacity, y: 0 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.3, delay: index * 0.1 }}
                   className="flex"
                 >
@@ -1148,8 +1148,8 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                         {mgmt.logs.map((log, i) => (
                           <motion.div 
                             key={`log-${manageMaterial}-${i}-${log.date.getTime()}-${log.quantity}`} 
-                            initial={{ opacity, y: 10 }} 
-                            animate={{ opacity, y: 0 }}
+                            initial={{ opacity: 0, y: 10 }} 
+                            animate={{ opacity: 1, y: 0 }}
                             className="border rounded-md p-3 bg-muted/50"
                           >
                             <div className="flex items-center justify-between">

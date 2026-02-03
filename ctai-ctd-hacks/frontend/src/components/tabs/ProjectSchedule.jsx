@@ -585,8 +585,8 @@ export function ProjectSchedule({ project }) {
                     return (
                       <motion.tr
                         key={task.id}
-                        initial={{ opacity, y: 10 }}
-                        animate={{ opacity, y: 0 }}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.2, delay: index * 0.1 }}
                         className="hover:bg-muted/50 transition-colors"
                       >
