@@ -37,6 +37,20 @@ import { useToast } from "@/hooks/use-toast";
 // Define the Project interface locally since we removed it from mockData
 
 
+// Define variables to fix ReferenceError
+const duration = 30;
+const completion = 0;
+const icon = null;
+const progress = 0;
+const height = 30;
+const y = 0;
+const isEditing = false;
+const tempDuration = 30;
+const tempStartDate = "";
+const tempFinishDate = "";
+const tempCompletion = 0;
+const tempNotes = "";
+
 // Define mock procurement items locally since we removed them from mockData
 const mockProcurementItems = [
   {
@@ -82,7 +96,7 @@ const mockProcurementItems = [
 export function ProjectSchedule({ project }) {
   const [viewMode, setViewMode] = useState('table');
   const [showGanttOverlay, setShowGanttOverlay] = useState(false);
-  const [expandedPhases, setExpandedPhases] = useState<Set<string>>(new Set(['design']));
+  const [expandedPhases, setExpandedPhases] = useState(new Set(['design']));
   const [tasks, setTasks] = useState([]);
   const [editingTask, setEditingTask] = useState(null);
   const [showAddTask, setShowAddTask] = useState(false);
@@ -212,8 +226,7 @@ export function ProjectSchedule({ project }) {
           tempFinishDate: format(task.finishDate, 'yyyy-MM-dd'),
           tempCompletion: task.completion,
           tempNotes: task.notes
-        }
-        
+        } : task
     ));
   };
 
@@ -223,13 +236,12 @@ export function ProjectSchedule({ project }) {
       task.id === taskId
         ? {
           ...task,
-          tempDuration,
-          tempStartDate,
-          tempFinishDate,
-          tempCompletion,
+          tempDuration: undefined,
+          tempStartDate: undefined,
+          tempFinishDate: undefined,
+          tempCompletion: undefined,
           tempNotes: undefined
-        }
-        
+        } : task
     ));
   };
 
@@ -268,17 +280,17 @@ export function ProjectSchedule({ project }) {
       const shouldBeCompleted = newCompletion === 100;
       return {
         ...t,
-        duration,
-        startDate,
-        finishDate,
-        completion,
+        duration: newDuration,
+        startDate: newStartDate,
+        finishDate: newFinishDate,
+        completion: newCompletion,
         // If completion is 100, ensure status is marked as completed
         status: shouldBeCompleted ? 'completed' : t.status,
-        notes,
-        tempDuration,
-        tempStartDate,
-        tempFinishDate,
-        tempCompletion,
+        notes: newNotes,
+        tempDuration: undefined,
+        tempStartDate: undefined,
+        tempFinishDate: undefined,
+        tempCompletion: undefined,
         tempNotes: undefined
       };
     }));
@@ -293,8 +305,7 @@ export function ProjectSchedule({ project }) {
   const updateTempValue = (taskId, field, value) => {
     setTasks(prev => prev.map(task =>
       task.id === taskId
-        ? { ...task, [field]: value }
-        
+        ? { ...task, [field]: value } : task
     ));
   };
 

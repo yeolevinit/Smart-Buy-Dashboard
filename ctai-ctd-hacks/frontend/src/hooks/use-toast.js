@@ -1,16 +1,7 @@
 import * as React from "react";
 
-import type { ToastActionElement, ToastProps } from "@/components/ui/toast";
-
 const TOAST_LIMIT = 1;
 const TOAST_REMOVE_DELAY = 1000000;
-
-type ToasterToast = ToastProps & {
-  id;
-  title?;
-  description?;
-  action?;
-};
 
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
@@ -26,28 +17,7 @@ function genId() {
   return count.toString();
 }
 
-
-
-type Action =
-  | {
-      type: ActionType["ADD_TOAST"];
-      toast;
-    }
-  | {
-      type: ActionType["UPDATE_TOAST"];
-      toast: Partial<ToasterToast>;
-    }
-  | {
-      type: ActionType["DISMISS_TOAST"];
-      toastId?: ToasterToast["id"];
-    }
-  | {
-      type: ActionType["REMOVE_TOAST"];
-      toastId?: ToasterToast["id"];
-    };
-
-
-const toastTimeouts = new Map<string, ReturnType<typeof setTimeout>>();
+const toastTimeouts = new Map();
 
 const addToRemoveQueue = (toastId) => {
   if (toastTimeouts.has(toastId)) {
@@ -67,21 +37,21 @@ const addToRemoveQueue = (toastId) => {
 
 export const reducer = (state, action) => {
   switch (action.type) {
-    case "ADD_TOAST" {
+    case "ADD_TOAST":
+      return {
         ...state,
         toasts: [action.toast, ...state.toasts].slice(0, TOAST_LIMIT),
       };
 
-    case "UPDATE_TOAST" {
+    case "UPDATE_TOAST":
+      return {
         ...state,
-        toasts: state.toasts.map((t) => (t.id === action.toast.id ? { ...t, ...action.toast } )),
+        toasts: state.toasts.map((t) => (t.id === action.toast.id ? { ...t, ...action.toast } : t)),
       };
 
     case "DISMISS_TOAST": {
       const { toastId } = action;
 
-      // ! Side effects ! - This could be extracted into a dismissToast() action,
-      // but I'll keep it here for simplicity
       if (toastId) {
         addToRemoveQueue(toastId);
       } else {
@@ -95,10 +65,10 @@ export const reducer = (state, action) => {
         toasts: state.toasts.map((t) =>
           t.id === toastId || toastId === undefined
             ? {
-                ...t,
-                open,
-              }
-            ,
+              ...t,
+              open: false,
+            }
+            : t
         ),
       };
     }
@@ -113,10 +83,12 @@ export const reducer = (state, action) => {
         ...state,
         toasts: state.toasts.filter((t) => t.id !== action.toastId),
       };
+    default:
+      return state;
   }
 };
 
-const listeners: Array<(state) => void> = [];
+const listeners = [];
 
 let memoryState = { toasts: [] };
 
@@ -126,8 +98,6 @@ function dispatch(action) {
     listener(memoryState);
   });
 }
-
-
 
 function toast({ ...props }) {
   const id = genId();
@@ -144,7 +114,7 @@ function toast({ ...props }) {
     toast: {
       ...props,
       id,
-      open,
+      open: true,
       onOpenChange: (open) => {
         if (!open) dismiss();
       },
@@ -174,9 +144,8 @@ function useToast() {
   return {
     ...state,
     toast,
-    dismiss: (toastId?) => dispatch({ type: "DISMISS_TOAST", toastId }),
+    dismiss: (toastId) => dispatch({ type: "DISMISS_TOAST", toastId }),
   };
 }
 
 export { useToast, toast };
-

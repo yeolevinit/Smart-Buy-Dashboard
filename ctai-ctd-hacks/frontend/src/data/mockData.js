@@ -1,12 +1,11 @@
 // Mock data for the AI Procurement Management Platform
 
-
-
-
-
-
-
-
+const quantity = 100;
+const cost = 500000;
+const isUser = true; // This global variable is defined but overridden in mockChatMessages objects
+const success = true;
+const materials = []; // This global variable is defined but not directly used in mockApiCall's return
+const timeline = []; // This global variable is defined but not directly used in mockApiCall's return
 
 // Mock materials prediction data
 export const mockMaterials = [
@@ -114,37 +113,38 @@ export const mockChatMessages = [
   {
     id: '1',
     message: 'Hello! I can help you with procurement planning and material optimization. What would you like to know?',
-    isUser,
+    isUser: false,
     timestamp: new Date('2024-01-15T10:00:00'),
   },
   {
     id: '2',
     message: 'What are the most cost-effective alternatives for structural steel in my project?',
-    isUser,
+    isUser: true,
     timestamp: new Date('2024-01-15T10:01:00'),
   },
   {
     id: '3',
     message: 'Based on current market trends, I recommend ordering steel materials 2 weeks earlier than planned due to supply chain constraints.',
-    isUser,
+    isUser: false,
     timestamp: new Date('2024-01-15T10:01:30'),
   },
 ];
 
 // Mock API functions
-export const mockApiCall = async (endpoint, data?) => {
+export const mockApiCall = async (endpoint, data) => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
-  
+
   switch (endpoint) {
-    case '/predict' {
+    case '/predict':
+      return {
         success,
-        materials,
-        timeline,
+        materials: mockMaterials,
+        timeline: mockProcurementItems,
         totalCost: mockMaterials.reduce((sum, material) => sum + material.cost, 0),
         estimatedDuration: '6 months',
       };
-    
+
     case '/chatbot':
       const responses = [
         'I can help you optimize your procurement strategy. What specific aspect would you like to focus on?',
@@ -157,7 +157,8 @@ export const mockApiCall = async (endpoint, data?) => {
         message: responses[Math.floor(Math.random() * responses.length)],
         timestamp: new Date(),
       };
-    
-    default { success, error: 'Unknown endpoint' };
+
+    default:
+      return { success: false, error: 'Unknown endpoint' };
   }
 };

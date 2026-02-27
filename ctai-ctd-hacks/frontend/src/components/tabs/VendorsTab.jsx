@@ -12,12 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Calendar } from "@/components/ui/calendar";
 import { useVendors } from "@/hooks/useVendors";
-import { Vendor, apiService } from "@/services/api";
-import { type PredictionResponse } from "@/services/api";
-
-// Define the Project interface locally since we removed it from mockData
-
-
+import { apiService } from "@/services/api";
 
 export function VendorsTab({ project, showPredictionResults = false, predictionData }) {
   const [searchTerm, setSearchTerm] = useState("");
@@ -25,18 +20,8 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
   const [locationFilter, setLocationFilter] = useState("");
   const [seeVendorsFor, setSeeVendorsFor] = useState(null);
   const [contactVendor, setContactVendor] = useState(null);
-  const [finalizedByMaterial, setFinalizedByMaterial] = useState<Record<string, Vendor | null>>({});
-  const [managementData, setManagementData] = useState<Record<string, {
-    paymentStatus: "Pending" | "Partially Paid" | "Completed";
-    deliveryDate: Date | null;
-    deliveryStatus: "Not Started" | "In Progress" | "Delivered";
-    agreementStatus: "Finalized" | "Pending Confirmation";
-    totalAmount;
-    paymentMade;
-    paymentDueDate: Date | null;
-    notes;
-    logs: { date; quantity; note?: string }[];
-  }>>({});
+  const [finalizedByMaterial, setFinalizedByMaterial] = useState({});
+  const [managementData, setManagementData] = useState({});
   const [manageMaterial, setManageMaterial] = useState(null);
   const { toast } = useToast();
 
@@ -58,7 +43,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
     }
     return [];
   }, [predictionData]);
-  
+
   const materialTypes = useMemo(() => Array.from(new Set(materials.map(m => m.name))), [materials]);
 
   const filteredMaterials = useMemo(() => {
@@ -69,14 +54,14 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
   }, [materials, searchTerm, selectedMaterial]);
 
   const refreshVendorData = async () => {
-    if (!project.id) return;
-    
+    if (!project.id) return {};
+
     try {
       // Load finalized vendors from the API
       const projectVendors = await apiService.getProjectVendors(project.id);
-      
+
       // Convert to the format expected by the component
-      const finalizedVendors: Record<string, Vendor | null> = {};
+      const finalizedVendors = {};
       projectVendors.forEach(vendor => {
         if (vendor.item_name) {
           finalizedVendors[vendor.item_name] = {
@@ -95,14 +80,14 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
             contact: vendor.contact,
             email: vendor.email,
             url: vendor.url,
-            finalized,
+            finalized: true, // Assuming if it's in projectVendors, it's finalized
             payment_status: vendor.payment_status,
             delivery_status: vendor.delivery_status,
             notes: vendor.notes
           };
         }
       });
-      
+
       setFinalizedByMaterial(finalizedVendors);
       return finalizedVendors;
     } catch (error) {
@@ -125,7 +110,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
       refreshVendorData();
     }
   }, [project.id, materials.length, predictionData?.materials?.length]);
-  
+
   // Refresh vendor data when a vendor is finalized
   useEffect(() => {
     // This effect will trigger whenever finalizedByMaterial changes
@@ -140,10 +125,10 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
   const showSelectedVendor = (material, vendor) => {
     // Set the material we're viewing vendors for
     setSeeVendorsFor(material);
-    
+
     // Since we're using the useVendors hook which manages the vendors state,
     // we need to temporarily set the vendors array to contain just this vendor
-    // This is a workaround - in a better implementation, we might want to 
+    // This is a workaround - in a better implementation, we might want to
     // have a separate state for viewing selected vendors
   };
 
@@ -151,35 +136,35 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
     try {
       // Finalize vendor via API
       await finalizeVendor(vendor.id);
-      
+
       // Ensure only one vendor per material by replacing any existing finalized vendor
       setFinalizedByMaterial(prev => ({ ...prev, [material]: vendor }));
       const materialData = materials.find(m => m.name === material);
       const unitPrice = Math.floor((materialData?.cost || 0) / (materialData?.quantity || 1));
       setManagementData(prev => ({
         ...prev,
-        [material]: prev[material] ?? { 
-          paymentStatus: "Pending", 
-          deliveryDate, 
+        [material]: prev[material] ?? {
+          paymentStatus: "Pending",
+          deliveryDate: null,
           deliveryStatus: "Not Started",
           agreementStatus: "Finalized",
           totalAmount: materialData?.cost || 0,
-          paymentMade,
-          paymentDueDate,
-          notes: "", 
-          logs: [] 
+          paymentMade: 0,
+          paymentDueDate: null,
+          notes: "",
+          logs: []
         },
       }));
-      
+
       // Save vendor to MongoDB with project and material associations
       try {
         const saveResult = await apiService.saveVendor({
           project_id: project.id,  // Associate with current project
-          material_name,  // Associate with current material
+          material_name: material,  // Associate with current material
           name: vendor.vendor,
           website: vendor.vendor_website,
-          rating: vendor.rating ? parseFloat(vendor.rating) ,
-          rating_count: vendor.rating_count ? parseInt(vendor.rating_count) ,
+          rating: vendor.rating ? parseFloat(vendor.rating) : 0,
+          rating_count: vendor.rating_count ? parseInt(vendor.rating_count) : 0,
           item_name: vendor.item_name,
           item_price: vendor.item_price,
           item_unit: vendor.item_unit,
@@ -190,17 +175,17 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
           contact: vendor.contact,
           email: vendor.email
         });
-        
+
         if (saveResult.success) {
           toast({
             title: "Vendor saved",
             description: `Vendor ${vendor.vendor} saved for ${material}`,
             variant: "default"
           });
-          
+
           // Refresh vendor data and predictions to ensure consistency
           await refreshVendorData();
-          
+
           // Also refresh predictions to update vendor assignment status
           if (project.id) {
             try {
@@ -225,17 +210,17 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
           variant: "destructive"
         });
       }
-      
+
       // Store finalized vendor data for ProcurementTimeline integration
       const finalizedVendors = JSON.parse(localStorage.getItem('finalizedVendors') || '{}');
       finalizedVendors[material] = {
         vendor: vendor.vendor,
-        deliveryDate, // Will be set when user updates delivery date in management
+        deliveryDate: null, // Will be set when user updates delivery date in management
         notes: "",
         finalizedAt: new Date().toISOString()
       };
       localStorage.setItem('finalizedVendors', JSON.stringify(finalizedVendors));
-      
+
       // Update the parent component's prediction data to reflect the new vendor assignment
       // This ensures the UI updates immediately without requiring a hard refresh
       if (project.id) {
@@ -258,30 +243,30 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
     }
   };
 
-  const addDeliveryLog = (material, quantity, date, note?) => {
+  const addDeliveryLog = (material, quantity, date, note) => {
     setManagementData(prev => ({
       ...prev,
       [material]: {
-        ...(prev[material] ?? { 
-          paymentStatus: "Pending", 
-          deliveryDate, 
+        ...(prev[material] ?? {
+          paymentStatus: "Pending",
+          deliveryDate: null,
           deliveryStatus: "Not Started",
           agreementStatus: "Finalized",
-          totalAmount,
-          paymentMade,
-          paymentDueDate,
-          notes: "", 
-          logs: [] 
+          totalAmount: 0,
+          paymentMade: 0,
+          paymentDueDate: null,
+          notes: "",
+          logs: []
         }),
-        logs: [ ...(prev[material]?.logs ?? []), { quantity, date, note } ],
+        logs: [...(prev[material]?.logs ?? []), { quantity, date, note }],
       },
     }));
   };
 
   const handleSearchVendors = async (material) => {
-    await searchVendors({ 
-      material, 
-      location: locationFilter || undefined 
+    await searchVendors({
+      material,
+      location: locationFilter || undefined
     });
     setSeeVendorsFor(material);
   };
@@ -290,16 +275,16 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
     setManagementData(prev => ({
       ...prev,
       [material]: {
-        ...(prev[material] ?? { 
-          paymentStatus: "Pending", 
-          deliveryDate, 
+        ...(prev[material] ?? {
+          paymentStatus: "Pending",
+          deliveryDate: null,
           deliveryStatus: "Not Started",
           agreementStatus: "Finalized",
-          totalAmount,
-          paymentMade,
-          paymentDueDate,
-          notes: "", 
-          logs: [] 
+          totalAmount: 0,
+          paymentMade: 0,
+          paymentDueDate: null,
+          notes: "",
+          logs: []
         }),
         paymentStatus: "Completed",
         paymentMade: prev[material]?.totalAmount || 0,
@@ -326,7 +311,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
       </div>
     );
   }
-  
+
   // Show a message when there are no predicted materials
   // Only show this message if we have prediction data and it's successful but has no materials
   if (showPredictionResults && predictionData && predictionData.success && predictionData.materials && predictionData.materials.length === 0) {
@@ -366,7 +351,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                 <span className="font-medium">AI Prediction Results</span>
               </div>
               <div className="text-sm text-muted-foreground mt-1">
-                {predictionData 
+                {predictionData
                   ? `Found ${materials.length} predicted materials. Search for vendors to get real-time quotes from IndiaMART.`
                   : "Based on your project requirements, we've identified the best vendors for your materials."
                 }
@@ -385,7 +370,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
         <CardContent>
           <div className="mb-4">
             <p className="text-sm text-muted-foreground">
-              {predictionData 
+              {predictionData
                 ? `Showing ${materials.length} materials from AI prediction. Click "Find Vendors" to search IndiaMART for each material.`
                 : "Track materials, compare vendors, and finalize selections"
               }
@@ -410,7 +395,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                 className="pl-10"
               />
             </div>
-            
+
           </div>
         </CardContent>
       </Card>
@@ -436,9 +421,9 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                   // Prioritize local state (finalizedByMaterial) over backend data (m.vendorAssigned)
                   // to ensure immediate UI updates after vendor selection
                   const vendorAssigned = finalizedByMaterial[m.name] || m.vendorAssigned || null;
-                  
+
                   const hasVendorAssigned = !!vendorAssigned;
-                  
+
                   return (
                     <motion.tr key={`material-${m.id}-${m.name}-${idx}`} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.2, delay: idx * 0.03 }} className={hasVendorAssigned ? "bg-emerald-50 dark:bg-emerald-900/20" : undefined}>
                       <TableCell className="font-medium flex items-center gap-2">
@@ -461,9 +446,9 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                         {hasVendorAssigned ? (
                           // Show actions for finalized vendors only
                           <div className="flex space-x-2">
-                            <Button 
-                              size="sm" 
-                              variant="outline" 
+                            <Button
+                              size="sm"
+                              variant="outline"
                               onClick={() => {
                                 if (vendorAssigned) {
                                   // Show the selected vendor directly
@@ -486,9 +471,9 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                           </div>
                         ) : (
                           // Show "Find Vendors" button when no vendor is finalized
-                          <Button 
-                            size="sm" 
-                            variant="outline" 
+                          <Button
+                            size="sm"
+                            variant="outline"
                             onClick={() => handleSearchVendors(m.name)}
                             disabled={loading}
                           >
@@ -527,13 +512,13 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
               {loading ? 'Searching for vendors...' : `Found ${vendors.length} vendors`}
             </DialogDescription>
           </DialogHeader>
-          
+
           {error && (
             <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 mb-4">
               <p className="text-red-800 dark:text-red-200 text-sm">{error}</p>
             </div>
           )}
-          
+
           {loading ? (
             <div className="flex items-center justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin" />
@@ -590,17 +575,16 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                               {Array.from({ length: 5 }, (_, i) => (
                                 <Star
                                   key={i}
-                                  className={`h-4 w-4 ${
-                                    i < Math.floor(parseFloat(vendor.rating || '0'))
-                                      ? 'fill-yellow-400 text-yellow-400'
-                                      : 'text-gray-300'
-                                  }`}
+                                  className={`h-4 w-4 ${i < Math.floor(parseFloat(vendor.rating || '0'))
+                                    ? 'fill-yellow-400 text-yellow-400'
+                                    : 'text-gray-300'
+                                    }`}
                                 />
                               ))}
                             </div>
                             <span className="text-sm font-medium">{vendor.rating}</span>
                             {vendor.rating_count && (
-                              ({vendor.rating_count})</span>
+                              <span>({vendor.rating_count})</span>
                             )}
                           </div>
                         )}
@@ -668,7 +652,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                           <MessageCircle className="h-4 w-4 mr-2" />
                           Contact
                         </Button>
-                        
+
                         {vendor.vendor_website && (
                           <Button
                             size="sm"
@@ -680,12 +664,12 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                             Visit
                           </Button>
                         )}
-                        
+
                         <Button
                           size="sm"
                           className="flex-1"
                           disabled={vendor.finalized}
-                          onClick={() => openFinalize(seeVendorsFor!, vendor)}
+                          onClick={() => openFinalize(seeVendorsFor, vendor)}
                         >
                           {vendor.finalized ? (
                             <>
@@ -706,7 +690,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
               ))}
             </div>
           )}
-          
+
           {vendors.length === 0 && !loading && (
             <div className="text-center py-12">
               <div className="text-muted-foreground mb-2">
@@ -737,7 +721,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                     <p className="text-sm text-muted-foreground">{contactVendor.item_name}</p>
                   )}
                 </div>
-                
+
                 {/* Verification Badges */}
                 <div className="flex flex-wrap gap-2">
                   {contactVendor.gst_verified && (
@@ -753,7 +737,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                     </Badge>
                   )}
                 </div>
-                
+
                 {/* Rating */}
                 {contactVendor.rating && (
                   <div className="flex items-center gap-2 pt-2">
@@ -761,21 +745,20 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                       {Array.from({ length: 5 }, (_, i) => (
                         <Star
                           key={i}
-                          className={`h-4 w-4 ${
-                            i < Math.floor(parseFloat(contactVendor.rating || '0'))
-                              ? 'fill-yellow-400 text-yellow-400'
-                              : 'text-gray-300'
-                          }`}
+                          className={`h-4 w-4 ${i < Math.floor(parseFloat(contactVendor.rating || '0'))
+                            ? 'fill-yellow-400 text-yellow-400'
+                            : 'text-gray-300'
+                            }`}
                         />
                       ))}
                     </div>
                     <span className="text-sm font-medium">{contactVendor.rating}</span>
                     {contactVendor.rating_count && (
-                      ({contactVendor.rating_count})</span>
+                      <span>({contactVendor.rating_count})</span>
                     )}
                   </div>
                 )}
-                
+
                 {/* Member Since */}
                 {contactVendor.member_since && (
                   <div className="flex items-center gap-2 text-sm">
@@ -783,7 +766,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                     <span>Member since {contactVendor.member_since}</span>
                   </div>
                 )}
-                
+
                 {/* Price Information */}
                 {contactVendor.item_price && (
                   <div className="bg-muted/50 rounded-lg p-3">
@@ -802,7 +785,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                     </div>
                   </div>
                 )}
-                
+
                 {/* Contact Information */}
                 <div className="space-y-3 pt-2">
                   <h4 className="font-medium text-sm">Contact Information</h4>
@@ -828,7 +811,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                     {contactVendor.vendor_website && (
                       <div className="flex items-center gap-2">
                         <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                        <button 
+                        <button
                           className="text-sm text-primary hover:underline"
                           onClick={() => window.open(contactVendor.vendor_website, '_blank')}
                         >
@@ -840,8 +823,8 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                 </div>
               </div>
               <div className="pt-4 flex gap-2">
-                <Button 
-                  variant="outline" 
+                <Button
+                  variant="outline"
                   className="flex-1"
                   onClick={() => {
                     navigator.clipboard.writeText(contactVendor.email || contactVendor.contact || '');
@@ -851,10 +834,10 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                   <Copy className="h-4 w-4 mr-2" />
                   Copy
                 </Button>
-                <Button 
+                <Button
                   className="flex-1"
-                  onClick={() => { 
-                    toast({ title: "Contacted", description: `Contact request sent to ${contactVendor.vendor}` }); 
+                  onClick={() => {
+                    toast({ title: "Contacted", description: `Contact request sent to ${contactVendor.vendor}` });
                     setContactVendor(null);
                   }}
                 >
@@ -865,30 +848,30 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
             </>
           )}
         </DialogContent>
-      </Dialog>
+      </Dialog >
 
 
       {/* Manage modal for a selected material */}
-      <Dialog open={!!manageMaterial} onOpenChange={(open) => !open && setManageMaterial(null)}>
+      < Dialog open={!!manageMaterial} onOpenChange={(open) => !open && setManageMaterial(null)}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           {manageMaterial && (() => {
-            const vendor = finalizedByMaterial[manageMaterial!];
+            const vendor = finalizedByMaterial[manageMaterial];
             if (!vendor) return null;
             const m = materials.find(mm => mm.name === manageMaterial);
-            const mgmt = managementData[manageMaterial] ?? { 
-              paymentStatus: "Pending", 
-              deliveryDate, 
+            const mgmt = managementData[manageMaterial] ?? {
+              paymentStatus: "Pending",
+              deliveryDate: null,
               deliveryStatus: "Not Started",
               agreementStatus: "Finalized",
               totalAmount: m?.cost || 0,
-              paymentMade,
-              paymentDueDate,
-              notes: "", 
-              logs: [] 
+              paymentMade: 0,
+              paymentDueDate: null,
+              notes: "",
+              logs: []
             };
-            const unitPrice = m ? Math.floor((m.cost || 0) / (m.quantity || 1)) ;
+            const unitPrice = m ? Math.floor((m.cost || 0) / (m.quantity || 1)) : 0;
             const paymentDue = mgmt.totalAmount - mgmt.paymentMade;
-            
+
             return (
               <>
                 <DialogHeader>
@@ -898,7 +881,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                   </DialogTitle>
                   <DialogDescription>Vendor: {vendor.vendor}</DialogDescription>
                 </DialogHeader>
-                
+
                 <div className="space-y-6">
                   {/* Basic Info */}
                   <Card>
@@ -950,7 +933,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                     <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div>
                         <Label>Agreement Status</Label>
-                        <Select value={mgmt.agreementStatus} onValueChange={(val) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial!] ?? { paymentStatus: "Pending", deliveryDate, deliveryStatus: "Not Started", totalAmount, paymentMade, paymentDueDate, notes: "", logs: [] }), agreementStatus: val as any } }))}>
+                        <Select value={mgmt.agreementStatus} onValueChange={(val) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial] ?? { paymentStatus: "Pending", deliveryDate: null, deliveryStatus: "Not Started", totalAmount: m?.cost || 0, paymentMade: 0, paymentDueDate: null, notes: "", logs: [] }), agreementStatus: val } }))}>
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Finalized">Finalized</SelectItem>
@@ -958,27 +941,27 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                           </SelectContent>
                         </Select>
                       </div>
-                        <div>
-                          <Label>Delivery Date</Label>
-                          <Input
-                            type="date"
-                            value={mgmt.deliveryDate ? mgmt.deliveryDate.toISOString().split('T')[0] : ''}
-                            onChange={(e) => {
-                              const newDate = e.target.value ? new Date(e.target.value) ;
-                              setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial!] ?? { paymentStatus: "Pending", deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount, paymentMade, paymentDueDate, notes: "", logs: [] }), deliveryDate: newDate } }));
-                              
-                              // Update localStorage for ProcurementTimeline integration
-                              const finalizedVendors = JSON.parse(localStorage.getItem('finalizedVendors') || '{}');
-                              if (finalizedVendors[manageMaterial]) {
-                                finalizedVendors[manageMaterial].deliveryDate = newDate?.toISOString() || null;
-                                localStorage.setItem('finalizedVendors', JSON.stringify(finalizedVendors));
-                              }
-                            }}
-                          />
-                        </div>
+                      <div>
+                        <Label>Delivery Date</Label>
+                        <Input
+                          type="date"
+                          value={mgmt.deliveryDate ? mgmt.deliveryDate.toISOString().split('T')[0] : ''}
+                          onChange={(e) => {
+                            const newDate = e.target.value ? new Date(e.target.value) : null;
+                            setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial] ?? { paymentStatus: "Pending", deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount: m?.cost || 0, paymentMade: 0, paymentDueDate: null, notes: "", logs: [] }), deliveryDate: newDate } }));
+
+                            // Update localStorage for ProcurementTimeline integration
+                            const finalizedVendors = JSON.parse(localStorage.getItem('finalizedVendors') || '{}');
+                            if (finalizedVendors[manageMaterial]) {
+                              finalizedVendors[manageMaterial].deliveryDate = newDate?.toISOString() || null;
+                              localStorage.setItem('finalizedVendors', JSON.stringify(finalizedVendors));
+                            }
+                          }}
+                        />
+                      </div>
                       <div>
                         <Label>Delivery Status</Label>
-                        <Select value={mgmt.deliveryStatus} onValueChange={(val) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial!] ?? { paymentStatus: "Pending", deliveryDate, agreementStatus: "Finalized", totalAmount, paymentMade, paymentDueDate, notes: "", logs: [] }), deliveryStatus: val as any } }))}>
+                        <Select value={mgmt.deliveryStatus} onValueChange={(val) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial] ?? { paymentStatus: "Pending", deliveryDate: null, agreementStatus: "Finalized", totalAmount: m?.cost || 0, paymentMade: 0, paymentDueDate: null, notes: "", logs: [] }), deliveryStatus: val } }))}>
                           <SelectTrigger><SelectValue /></SelectTrigger>
                           <SelectContent>
                             <SelectItem value="Not Started">Not Started</SelectItem>
@@ -1013,7 +996,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                       <div className="space-y-4">
                         <div>
                           <Label>Payment Status</Label>
-                          <Select value={mgmt.paymentStatus} onValueChange={(val) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial!] ?? { deliveryDate, deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount, paymentMade, paymentDueDate, notes: "", logs: [] }), paymentStatus: val as any } }))}>
+                          <Select value={mgmt.paymentStatus} onValueChange={(val) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial] ?? { deliveryDate: null, deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount: m?.cost || 0, paymentMade: 0, paymentDueDate: null, notes: "", logs: [] }), paymentStatus: val } }))}>
                             <SelectTrigger><SelectValue /></SelectTrigger>
                             <SelectContent>
                               <SelectItem value="Pending">Pending</SelectItem>
@@ -1027,39 +1010,39 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                           <Input
                             type="date"
                             value={mgmt.paymentDueDate ? mgmt.paymentDueDate.toISOString().split('T')[0] : ''}
-                            onChange={(e) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial!] ?? { paymentStatus: "Pending", deliveryDate, deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount, paymentMade, notes: "", logs: [] }), paymentDueDate: e.target.value ? new Date(e.target.value) : null } }))}
+                            onChange={(e) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial] ?? { paymentStatus: "Pending", deliveryDate: null, deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount: m?.cost || 0, paymentMade: 0, notes: "", logs: [] }), paymentDueDate: e.target.value ? new Date(e.target.value) : null } }))}
                           />
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-2">
-                          <Input 
-                            type="date" 
+                          <Input
+                            type="date"
                             placeholder="Payment date"
                             defaultValue={new Date().toISOString().split('T')[0]}
-                            className="w-full" 
+                            className="w-full"
                           />
-                          <Input 
-                            type="number" 
-                            placeholder="Payment amount" 
-                            className="w-full" 
+                          <Input
+                            type="number"
+                            placeholder="Payment amount"
+                            className="w-full"
                             max={paymentDue}
                           />
-                          <Button 
+                          <Button
                             onClick={(e) => {
                               const parentElement = e.currentTarget.parentElement;
                               if (!parentElement) return;
-                              
-                              const dateInput = parentElement.children[0] as HTMLInputElement;
-                              const amountInput = parentElement.children[1] as HTMLInputElement;
-                              
+
+                              const dateInput = parentElement.children[0];
+                              const amountInput = parentElement.children[1];
+
                               const amount = Number(amountInput.value);
                               const dateStr = dateInput.value;
-                              
+
                               if (!isNaN(amount) && amount > 0 && amount <= paymentDue && dateStr) {
                                 const paymentDate = new Date(dateStr);
                                 setManagementData(prev => ({
                                   ...prev,
                                   [manageMaterial]: {
-                                    ...(prev[manageMaterial] ?? { paymentStatus: "Pending", deliveryDate, deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount, paymentMade, paymentDueDate, notes: "", logs: [] }),
+                                    ...(prev[manageMaterial] ?? { paymentStatus: "Pending", deliveryDate: null, deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount: m?.cost || 0, paymentMade: 0, paymentDueDate: null, notes: "", logs: [] }),
                                     paymentMade: (prev[manageMaterial]?.paymentMade || 0) + amount,
                                     paymentStatus: amount + (prev[manageMaterial]?.paymentMade || 0) >= mgmt.totalAmount ? "Completed" : "Partially Paid"
                                   }
@@ -1067,8 +1050,8 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                                 amountInput.value = "";
                                 toast({ title: "Payment recorded", description: `₹${amount.toLocaleString()} payment recorded for ${manageMaterial} on ${paymentDate.toDateString()}` });
                               } else {
-                                toast({ 
-                                  title: "Invalid input", 
+                                toast({
+                                  title: "Invalid input",
                                   description: "Please enter a valid date and amount",
                                   variant: "destructive"
                                 });
@@ -1080,7 +1063,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                             Record Payment
                           </Button>
                         </div>
-                        <Button 
+                        <Button
                           onClick={() => markPaymentAsPaid(manageMaterial)}
                           disabled={mgmt.paymentStatus === "Completed"}
                           className="w-full"
@@ -1132,7 +1115,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                       <Input
                         placeholder="Add remarks (e.g., 'Advance paid', 'Delay expected')"
                         value={mgmt.notes}
-                        onChange={(e) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial!] ?? { paymentStatus: "Pending", deliveryDate, deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount, paymentMade, paymentDueDate, logs: [] }), notes: e.target.value } }))}
+                        onChange={(e) => setManagementData(prev => ({ ...prev, [manageMaterial]: { ...(prev[manageMaterial] ?? { paymentStatus: "Pending", deliveryDate: null, deliveryStatus: "Not Started", agreementStatus: "Finalized", totalAmount: m?.cost || 0, paymentMade: 0, paymentDueDate: null, logs: [] }), notes: e.target.value } }))}
                       />
                     </CardContent>
                   </Card>
@@ -1146,15 +1129,15 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                       <div className="space-y-3">
                         {mgmt.logs.length === 0 && <div className="text-sm text-muted-foreground text-center py-4">No delivery logs yet</div>}
                         {mgmt.logs.map((log, i) => (
-                          <motion.div 
-                            key={`log-${manageMaterial}-${i}-${log.date.getTime()}-${log.quantity}`} 
-                            initial={{ opacity: 0, y: 10 }} 
+                          <motion.div
+                            key={`log-${manageMaterial}-${i}-${log.date.getTime()}-${log.quantity}`}
+                            initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             className="border rounded-md p-3 bg-muted/50"
                           >
                             <div className="flex items-center justify-between">
                               <div className="text-sm font-medium">{log.date.toDateString()}</div>
-                              <div className="text-sm text-muted-foreground">{log.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+                              <div className="text-sm text-muted-foreground">{log.date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
                             </div>
                             <div className="flex items-center gap-2 mt-2">
                               <div className="text-sm">
@@ -1165,36 +1148,36 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                           </motion.div>
                         ))}
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-2 pt-2">
-                          <Input 
-                            type="date" 
-                            className="w-full" 
+                          <Input
+                            type="date"
+                            className="w-full"
                             defaultValue={new Date().toISOString().split('T')[0]}
                           />
-                          <Input 
-                            type="number" 
-                            placeholder="Quantity" 
-                            className="w-full" 
+                          <Input
+                            type="number"
+                            placeholder="Quantity"
+                            className="w-full"
                           />
-                          <Input 
-                            type="text" 
-                            placeholder="Note (optional)" 
-                            className="w-full" 
+                          <Input
+                            type="text"
+                            placeholder="Note (optional)"
+                            className="w-full"
                           />
-                          <Button 
-                            size="sm" 
+                          <Button
+                            size="sm"
                             onClick={(e) => {
                               if (!manageMaterial) return;
                               const parentElement = e.currentTarget.parentElement;
                               if (!parentElement) return;
-                              
-                              const dateInput = parentElement.children[0] as HTMLInputElement;
-                              const quantityInput = parentElement.children[1] as HTMLInputElement;
-                              const noteInput = parentElement.children[2] as HTMLInputElement;
-                              
+
+                              const dateInput = parentElement.children[0];
+                              const quantityInput = parentElement.children[1];
+                              const noteInput = parentElement.children[2];
+
                               const qty = Number(quantityInput.value);
                               const note = noteInput.value;
                               const dateStr = dateInput.value;
-                              
+
                               if (!isNaN(qty) && qty > 0 && dateStr) {
                                 const date = new Date(dateStr);
                                 addDeliveryLog(manageMaterial, qty, date, note);
@@ -1202,8 +1185,8 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                                 noteInput.value = "";
                                 toast({ title: "Delivery log added", description: `Added delivery log for ${qty} ${m?.unit} on ${date.toDateString()}` });
                               } else {
-                                toast({ 
-                                  title: "Invalid input", 
+                                toast({
+                                  title: "Invalid input",
                                   description: "Please enter a valid date and quantity",
                                   variant: "destructive"
                                 });
@@ -1216,9 +1199,9 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                       </div>
 
                       <div className="flex flex-wrap gap-3 mt-4">
-                        
-                        <Button 
-                          variant="destructive" 
+
+                        <Button
+                          variant="destructive"
                           onClick={() => {
                             if (confirm("Are you sure you want to remove this vendor?")) {
                               setFinalizedByMaterial(prev => {
@@ -1227,7 +1210,7 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
                                 return newState;
                               });
                               setManageMaterial(null);
-                              toast({ title: "Vendor removed", description: `${vendor.vendor} removed from ${manageMaterial}` });
+                              toast({ title: "Vendor removed", description: `${vendor?.vendor || 'Vendor'} removed from ${manageMaterial}` });
                             }
                           }}
                         >
@@ -1246,8 +1229,8 @@ export function VendorsTab({ project, showPredictionResults = false, predictionD
             );
           })()}
         </DialogContent>
-      </Dialog>
+      </Dialog >
 
-    </div>
+    </div >
   );
 }

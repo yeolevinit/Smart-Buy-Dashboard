@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { type PredictionResponse } from "@/services/api";
 import { apiService } from "@/services/api";
 import { InputForm } from "./tabs/InputForm";
 import { MaterialPrediction } from "./tabs/MaterialPrediction";
@@ -59,7 +58,7 @@ export function ProjectTabs({ project }) {
     } catch (error) {
       console.error("Error saving prediction:", error);
     }
-    
+
     handlePredictionComplete(data);
   };
 

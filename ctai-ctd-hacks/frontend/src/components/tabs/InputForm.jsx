@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { apiService, type PredictionResponse } from "@/services/api";
+import { apiService } from "@/services/api";
 import { Loader2, Send } from "lucide-react";
 
 // Define the Project interface locally since we removed it from mockData

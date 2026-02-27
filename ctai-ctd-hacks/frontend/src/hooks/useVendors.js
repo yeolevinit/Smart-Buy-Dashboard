@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { apiService, Vendor, VendorSearchParams, VendorUpdateData } from '@/services/api';
+import { apiService } from '@/services/api';
 import { useToast } from '@/hooks/use-toast';
 
 
@@ -13,11 +13,11 @@ export function useVendors() {
   const searchVendors = useCallback(async (params) => {
     setLoading(true);
     setError(null);
-    
+
     try {
       const results = await apiService.searchVendors(params);
       setVendors(results);
-      
+
       if (results.length === 0) {
         toast({
           title: "No vendors found",
@@ -36,7 +36,7 @@ export function useVendors() {
       setError(errorMessage);
       toast({
         title: "Search failed",
-        description,
+        description: errorMessage,
         variant: "destructive"
       });
     } finally {
@@ -48,16 +48,15 @@ export function useVendors() {
     try {
       // Use updateVendor to set finalized status instead of separate finalize endpoint
       await updateVendor(vendorId, { finalized: true });
-      
+
       // Update local state
-      setVendors(prev => 
-        prev.map(vendor => 
-          vendor.id === vendorId 
-            ? { ...vendor, finalized: true }
-            
+      setVendors(prev =>
+        prev.map(vendor =>
+          vendor.id === vendorId
+            ? { ...vendor, finalized: true } : vendor
         )
       );
-      
+
       const vendor = vendors.find(v => v.id === vendorId);
       toast({
         title: "Vendor finalized",
@@ -68,7 +67,7 @@ export function useVendors() {
       const errorMessage = err instanceof Error ? err.message : 'Failed to finalize vendor';
       toast({
         title: "Finalization failed",
-        description,
+        description: errorMessage,
         variant: "destructive"
       });
     }
@@ -77,16 +76,15 @@ export function useVendors() {
   const updateVendor = useCallback(async (vendorId, data) => {
     try {
       await apiService.updateVendor(vendorId, data);
-      
+
       // Update local state
-      setVendors(prev => 
-        prev.map(vendor => 
-          vendor.id === vendorId 
-            ? { ...vendor, ...data }
-            
+      setVendors(prev =>
+        prev.map(vendor =>
+          vendor.id === vendorId
+            ? { ...vendor, ...data } : vendor
         )
       );
-      
+
       toast({
         title: "Vendor updated",
         description: "Vendor information has been updated successfully",
@@ -96,7 +94,7 @@ export function useVendors() {
       const errorMessage = err instanceof Error ? err.message : 'Failed to update vendor';
       toast({
         title: "Update failed",
-        description,
+        description: errorMessage,
         variant: "destructive"
       });
     }

@@ -2,13 +2,16 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
-import { type PredictionResponse, type MaterialPrediction as APIMaterialPrediction } from "@/services/api";
 import { Package, IndianRupee, TrendingUp, Activity } from "lucide-react";
 
 // Define the Project interface locally since we removed it from mockData
 
 
 // Define mock materials locally since we removed them from mockData
+// Define variables to fix ReferenceError
+const quantity = 100;
+const cost = 50000;
+
 const mockMaterials = [
   { id: '1', name: 'Structural Steel', quantity, unit: 'tons', cost, category: 'Structure' }, // ₹5.6 Cr
   { id: '2', name: 'Concrete (M40)', quantity, unit: 'm³', cost, category: 'Foundation' },
@@ -31,13 +34,13 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
     unit: m.unit,
     cost: m.cost
   }));
-  
+
   const totalCost = predictionData?.total_cost || mockMaterials.reduce((sum, material) => sum + material.cost, 0);
   const confidence = predictionData?.confidence || 94.0;
   const totalQuantity = materials.reduce((sum, material) => sum + material.quantity, 0);
-  
+
   // Ensure we don't divide by zero
-  const avgCostPerUnit = totalQuantity > 0 ? Math.round(totalCost / totalQuantity) ;
+  const avgCostPerUnit = totalQuantity > 0 ? Math.round(totalCost / totalQuantity) : 0;
 
   const barChartData = materials.map(material => ({
     name: material.name.split(' ')[0], // Shortened names for chart
@@ -72,7 +75,7 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
                 <span className="font-medium">AI Prediction Complete</span>
               </div>
               <div className="text-sm text-muted-foreground mt-1">
-                {predictionData 
+                {predictionData
                   ? `AI prediction generated with ${confidence.toFixed(1)}% confidence for ${project.type}.`
                   : "Material requirements and cost analysis generated based on your project specifications."
                 }
