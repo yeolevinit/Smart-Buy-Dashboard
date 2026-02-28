@@ -6,3 +6,4 @@ pydantic-settings>=2.1.0
 python-dotenv>=1.0.1
 passlib[bcrypt]==1.7.4
 PyJWT==2.8.0
+email-validator>=2.1.0>=0.109.0
