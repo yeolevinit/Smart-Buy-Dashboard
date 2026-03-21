@@ -68,6 +68,7 @@ app.add_middleware(
         "http://127.0.0.1:5173", 
         "http://localhost:8001", 
         "http://localhost:8080", 
+        "http://127.0.0.1:8080",
         "http://localhost:8081", 
         "https://smartbuy-dashboard-frontend.onrender.com",
         "https://ctai-ctd-hacks.onrender.com"  # Your frontend URL
