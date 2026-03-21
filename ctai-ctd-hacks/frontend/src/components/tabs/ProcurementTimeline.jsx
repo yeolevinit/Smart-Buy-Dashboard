@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Project, mockProcurementItems } from "@/data/mockData";
+import { mockProcurementItems } from "@/data/mockData";
 import { format, differenceInDays, startOfDay, endOfDay, parseISO, isValid } from "date-fns";
 import { Calendar, Clock, AlertTriangle, CheckCircle, Package, Search, Filter, BarChart3, Table, Eye, Edit3, Save, X } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from "recharts";

@@ -27,7 +27,7 @@ def hash_password(password: str, salt: str = None) -> tuple[str, str]:
 def add_admin_user():
     """Add admin user to MongoDB"""
     # MongoDB connection
-    client = MongoClient('mongodb+srv://vebs:vebs#23@ctd.gnfgh2l.mongodb.net/?retryWrites=true&w=majority&appName=ctd')
+    client = MongoClient('mongodb+srv://yeolevinit24_db_user:C1UkfsuhM1uOgtkT@smartbuydashboard.xaffjte.mongodb.net/?appName=smartbuydashboard')
     db = client['smartbuy_dashboard']
     users_collection = db['users']
     

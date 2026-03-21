@@ -1,22 +1,15 @@
 // Mock data for the AI Procurement Management Platform
 
-const quantity = 100;
-const cost = 500000;
-const isUser = true; // This global variable is defined but overridden in mockChatMessages objects
-const success = true;
-const materials = []; // This global variable is defined but not directly used in mockApiCall's return
-const timeline = []; // This global variable is defined but not directly used in mockApiCall's return
-
 // Mock materials prediction data
 export const mockMaterials = [
-  { id: '1', name: 'Structural Steel', quantity, unit: 'tons', cost, category: 'Structure' }, // ₹5.6 Cr
-  { id: '2', name: 'Concrete (M40)', quantity, unit: 'm³', cost, category: 'Foundation' },
-  { id: '3', name: 'Glass Curtain Wall', quantity, unit: 'm²', cost, category: 'Exterior' },
-  { id: '4', name: 'HVAC Systems', quantity, unit: 'units', cost, category: 'MEP' },
-  { id: '5', name: 'Electrical Conduits', quantity, unit: 'm', cost, category: 'Electrical' },
-  { id: '6', name: 'Fire Safety Systems', quantity, unit: 'systems', cost, category: 'Safety' },
-  { id: '7', name: 'Insulation Materials', quantity, unit: 'm²', cost, category: 'Interior' },
-  { id: '8', name: 'Plumbing Fixtures', quantity, unit: 'units', cost, category: 'MEP' },
+  { id: '1', name: 'Structural Steel', quantity: 450, unit: 'tons', cost: 56000000, category: 'Structure' },
+  { id: '2', name: 'Concrete (M40)', quantity: 2800, unit: 'm³', cost: 32000000, category: 'Foundation' },
+  { id: '3', name: 'Glass Curtain Wall', quantity: 1200, unit: 'm²', cost: 75000000, category: 'Exterior' },
+  { id: '4', name: 'HVAC Systems', quantity: 24, unit: 'units', cost: 28000000, category: 'MEP' },
+  { id: '5', name: 'Electrical Conduits', quantity: 5500, unit: 'm', cost: 6200000, category: 'Electrical' },
+  { id: '6', name: 'Fire Safety Systems', quantity: 8, unit: 'systems', cost: 13500000, category: 'Safety' },
+  { id: '7', name: 'Insulation Materials', quantity: 3200, unit: 'm²', cost: 4800000, category: 'Interior' },
+  { id: '8', name: 'Plumbing Fixtures', quantity: 180, unit: 'units', cost: 9800000, category: 'MEP' },
 ];
 
 // Mock vendors data
@@ -108,7 +101,7 @@ export const mockProcurementItems = [
   },
 ];
 
-// Mock chat messages
+// Mock chat messages — isUser is a plain boolean value per message
 export const mockChatMessages = [
   {
     id: '1',
@@ -130,33 +123,34 @@ export const mockChatMessages = [
   },
 ];
 
-// Mock API functions
+// Mock API simulation
 export const mockApiCall = async (endpoint, data) => {
-  // Simulate API delay
+  // Simulate network delay
   await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
 
   switch (endpoint) {
     case '/predict':
       return {
-        success,
+        success: true,
         materials: mockMaterials,
         timeline: mockProcurementItems,
-        totalCost: mockMaterials.reduce((sum, material) => sum + material.cost, 0),
+        totalCost: mockMaterials.reduce((sum, m) => sum + m.cost, 0),
         estimatedDuration: '6 months',
       };
 
-    case '/chatbot':
+    case '/chatbot': {
       const responses = [
-        'I can help you optimize your procurement strategy. What specific aspect would you like to focus on?',
+        'I can help you optimise your procurement strategy. What specific aspect would you like to focus on?',
         'Based on current market trends, I recommend ordering steel materials 2 weeks earlier than planned due to supply chain constraints.',
         'Your current timeline looks feasible. However, I suggest adding a 10% buffer for critical path items.',
-        'Would you like me to analyze alternative suppliers for cost optimization?',
+        'Would you like me to analyse alternative suppliers for cost optimisation?',
       ];
       return {
-        success,
+        success: true,
         message: responses[Math.floor(Math.random() * responses.length)],
         timestamp: new Date(),
       };
+    }
 
     default:
       return { success: false, error: 'Unknown endpoint' };

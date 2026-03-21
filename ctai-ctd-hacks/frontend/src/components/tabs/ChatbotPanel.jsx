@@ -1,41 +1,35 @@
 import { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Send, Bot, User, Loader2, TrendingUp, Calendar, Package } from "lucide-react";
+import { Send, Bot, User, Loader2 } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { format } from "date-fns";
 import { mockApiCall } from "@/data/mockData";
 
-// Define the Project interface locally since we removed it from mockData
-
-
-
-
-// Define mock chat messages locally since we removed them from mockData
-const mockChatMessages = [
+const initialMessages = [
   {
     id: '1',
     message: 'Hello! I can help you with procurement planning and material optimization. What would you like to know?',
-    isUser,
+    isUser: false,
     timestamp: new Date('2024-01-15T10:00:00'),
   },
   {
     id: '2',
     message: 'What are the most cost-effective alternatives for structural steel in my project?',
-    isUser,
+    isUser: true,
     timestamp: new Date('2024-01-15T10:01:00'),
   },
   {
     id: '3',
     message: 'Based on current market trends, I recommend ordering steel materials 2 weeks earlier than planned due to supply chain constraints.',
-    isUser,
+    isUser: false,
     timestamp: new Date('2024-01-15T10:01:30'),
   },
 ];
 
 export function ChatbotPanel({ project }) {
-  const [messages, setMessages] = useState(mockChatMessages);
+  const [messages, setMessages] = useState(initialMessages);
   const [inputValue, setInputValue] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -50,13 +44,15 @@ export function ChatbotPanel({ project }) {
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    
+
     if (!inputValue.trim() || isLoading) return;
+
+    const messageText = inputValue.trim();
 
     const userMessage = {
       id: Date.now().toString(),
-      message,
-      isUser,
+      message: messageText,
+      isUser: true,
       timestamp: new Date(),
     };
 
@@ -65,26 +61,24 @@ export function ChatbotPanel({ project }) {
     setIsLoading(true);
 
     try {
-      const response = await mockApiCall('/chatbot', { message, projectId: project.id });
-      
+      const response = await mockApiCall('/chatbot', { message: messageText, projectId: project.id });
+
       if (response.success) {
         const botMessage = {
           id: (Date.now() + 1).toString(),
           message: response.message,
-          isUser,
+          isUser: false,
           timestamp: new Date(),
         };
-        
         setMessages(prev => [...prev, botMessage]);
       }
     } catch (error) {
       const errorMessage = {
         id: (Date.now() + 1).toString(),
         message: "I'm sorry, I'm having trouble connecting right now. Please try again later.",
-        isUser,
+        isUser: false,
         timestamp: new Date(),
       };
-      
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
@@ -111,12 +105,12 @@ export function ChatbotPanel({ project }) {
             Get intelligent insights and recommendations for your procurement strategy
           </CardDescription>
         </CardHeader>
-        
+
         <CardContent className="flex-1 flex flex-col p-0">
           {/* Messages Area */}
           <div className="flex-1 overflow-y-auto p-6 space-y-4 max-h-[500px]">
             <AnimatePresence initial={false}>
-              {messages.map((message, index) => (
+              {messages.map((message) => (
                 <motion.div
                   key={message.id}
                   initial={{ opacity: 0, y: 10 }}
@@ -125,24 +119,27 @@ export function ChatbotPanel({ project }) {
                   transition={{ duration: 0.2 }}
                   className={`flex gap-3 ${message.isUser ? 'flex-row-reverse' : 'flex-row'}`}
                 >
-                  <div style={{height:'fit-content'}} className={`p-2 rounded-full ${
-                    message.isUser 
-                      ? 'bg-primary text-primary-foreground' 
+                  <div
+                    style={{ height: 'fit-content' }}
+                    className={`p-2 rounded-full ${message.isUser
+                      ? 'bg-primary text-primary-foreground'
                       : 'bg-muted text-muted-foreground'
-                  }`}>
+                      }`}
+                  >
                     {message.isUser ? (
                       <User className="h-4 w-4" />
                     ) : (
                       <Bot className="h-4 w-4" />
                     )}
                   </div>
-                  
+
                   <div className={`flex-1 max-w-[80%] ${message.isUser ? 'text-right' : 'text-left'}`}>
-                    <div className={`p-3 rounded-lg ${
-                      message.isUser
+                    <div
+                      className={`p-3 rounded-lg ${message.isUser
                         ? 'bg-primary text-primary-foreground ml-auto'
                         : 'bg-muted text-foreground'
-                    }`}>
+                        }`}
+                    >
                       <p className="text-sm whitespace-pre-wrap">{message.message}</p>
                     </div>
                     <p className="text-xs text-muted-foreground mt-1">
@@ -151,7 +148,7 @@ export function ChatbotPanel({ project }) {
                   </div>
                 </motion.div>
               ))}
-              
+
               {isLoading && (
                 <motion.div
                   initial={{ opacity: 0, y: 10 }}
@@ -204,8 +201,8 @@ export function ChatbotPanel({ project }) {
                 disabled={isLoading}
                 className="flex-1"
               />
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 size="icon"
                 disabled={!inputValue.trim() || isLoading}
                 className="gradient-button"

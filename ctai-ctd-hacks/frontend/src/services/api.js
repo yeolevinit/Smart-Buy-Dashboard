@@ -2,8 +2,6 @@
 const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 class ApiService {
-  baseUrl;
-
   constructor(baseUrl = API_BASE_URL) {
     this.baseUrl = baseUrl;
   }
@@ -40,7 +38,6 @@ class ApiService {
     if (params.location) {
       searchParams.append('location', params.location);
     }
-
     return this.request(`/vendors?${searchParams.toString()}`);
   }
 
@@ -133,9 +130,10 @@ class ApiService {
 
   // Assign vendor to material
   async assignVendorToMaterial(projectId, materialId, vendorId) {
-    return this.request(`/projects/${projectId}/materials/${materialId}/assign-vendor?vendor_id=${vendorId}`, {
-      method: 'PATCH',
-    });
+    return this.request(
+      `/projects/${projectId}/materials/${materialId}/assign-vendor?vendor_id=${vendorId}`,
+      { method: 'PATCH' }
+    );
   }
 
   // User Authentication

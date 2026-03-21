@@ -1,51 +1,41 @@
 import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import {
+  BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer,
+  PieChart, Pie, Cell
+} from "recharts";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Package, IndianRupee, TrendingUp, Activity } from "lucide-react";
 
-// Define the Project interface locally since we removed it from mockData
-
-
-// Define mock materials locally since we removed them from mockData
-// Define variables to fix ReferenceError
-const quantity = 100;
-const cost = 50000;
-
-const mockMaterials = [
-  { id: '1', name: 'Structural Steel', quantity, unit: 'tons', cost, category: 'Structure' }, // ₹5.6 Cr
-  { id: '2', name: 'Concrete (M40)', quantity, unit: 'm³', cost, category: 'Foundation' },
-  { id: '3', name: 'Glass Curtain Wall', quantity, unit: 'm²', cost, category: 'Exterior' },
-  { id: '4', name: 'HVAC Systems', quantity, unit: 'units', cost, category: 'MEP' },
-  { id: '5', name: 'Electrical Conduits', quantity, unit: 'm', cost, category: 'Electrical' },
-  { id: '6', name: 'Fire Safety Systems', quantity, unit: 'systems', cost, category: 'Safety' },
-  { id: '7', name: 'Insulation Materials', quantity, unit: 'm²', cost, category: 'Interior' },
-  { id: '8', name: 'Plumbing Fixtures', quantity, unit: 'units', cost, category: 'MEP' },
+// Fallback mock materials used when no prediction data is available
+const DEFAULT_MOCK_MATERIALS = [
+  { id: '1', name: 'Structural Steel', category: 'Structure', quantity: 450, unit: 'tons', cost: 56000000 },
+  { id: '2', name: 'Concrete (M40)', category: 'Foundation', quantity: 2800, unit: 'm³', cost: 32000000 },
+  { id: '3', name: 'Glass Curtain Wall', category: 'Exterior', quantity: 1200, unit: 'm²', cost: 75000000 },
+  { id: '4', name: 'HVAC Systems', category: 'MEP', quantity: 24, unit: 'units', cost: 28000000 },
+  { id: '5', name: 'Electrical Conduits', category: 'Electrical', quantity: 5500, unit: 'm', cost: 6200000 },
+  { id: '6', name: 'Fire Safety Systems', category: 'Safety', quantity: 8, unit: 'systems', cost: 13500000 },
+  { id: '7', name: 'Insulation Materials', category: 'Interior', quantity: 3200, unit: 'm²', cost: 4800000 },
+  { id: '8', name: 'Plumbing Fixtures', category: 'MEP', quantity: 180, unit: 'units', cost: 9800000 },
 ];
-
 
 export function MaterialPrediction({ project, showPredictionResults = false, predictionData }) {
   // Use real prediction data if available, otherwise fall back to mock data
-  const materials = predictionData?.materials || mockMaterials.map(m => ({
-    id: m.id,
-    name: m.name,
-    category: m.category,
-    quantity: m.quantity,
-    unit: m.unit,
-    cost: m.cost
-  }));
+  const materials = predictionData?.materials?.length
+    ? predictionData.materials
+    : DEFAULT_MOCK_MATERIALS;
 
-  const totalCost = predictionData?.total_cost || mockMaterials.reduce((sum, material) => sum + material.cost, 0);
-  const confidence = predictionData?.confidence || 94.0;
-  const totalQuantity = materials.reduce((sum, material) => sum + material.quantity, 0);
+  const totalCost = predictionData?.total_cost
+    || DEFAULT_MOCK_MATERIALS.reduce((sum, m) => sum + m.cost, 0);
 
-  // Ensure we don't divide by zero
+  const confidence = predictionData?.confidence ?? 94.0;
+  const totalQuantity = materials.reduce((sum, m) => sum + m.quantity, 0);
   const avgCostPerUnit = totalQuantity > 0 ? Math.round(totalCost / totalQuantity) : 0;
 
   const barChartData = materials.map(material => ({
-    name: material.name.split(' ')[0], // Shortened names for chart
+    name: material.name.split(' ')[0],
     quantity: material.quantity,
-    cost: material.cost / 100000, // Convert to lakhs
+    cost: material.cost / 100000, // convert to lakhs for readability
   }));
 
   const pieChartData = materials.map((material, index) => ({
@@ -58,6 +48,8 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
     quantity: { label: "Quantity", color: "hsl(var(--primary))" },
     cost: { label: "Cost (₹ Lakhs)", color: "hsl(var(--secondary))" },
   };
+
+
 
   return (
     <div className="tab-content">
@@ -87,73 +79,54 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
 
       {/* Summary Cards */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
-        >
-          <Card className="dashboard-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Materials</CardTitle>
-              <Package className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{materials.length}</div>
-              <p className="text-xs text-muted-foreground">Material types required</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
-        >
-          <Card className="dashboard-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Cost</CardTitle>
-              <IndianRupee className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">₹{(totalCost / 10000000).toFixed(2)} Cr</div>
-              <p className="text-xs text-muted-foreground">Estimated procurement cost</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.3 }}
-        >
-          <Card className="dashboard-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Avg. Cost/Unit</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">₹{avgCostPerUnit.toLocaleString('en-IN')}</div>
-              <p className="text-xs text-muted-foreground">Per unit average</p>
-            </CardContent>
-          </Card>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.4 }}
-        >
-          <Card className="dashboard-card">
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Confidence</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{confidence.toFixed(1)}%</div>
-              <p className="text-xs text-muted-foreground">Prediction accuracy</p>
-            </CardContent>
-          </Card>
-        </motion.div>
+        {[
+          {
+            title: "Total Materials",
+            icon: <Package className="h-4 w-4 text-muted-foreground" />,
+            value: materials.length,
+            sub: "Material types required",
+            delay: 0.1,
+          },
+          {
+            title: "Total Cost",
+            icon: <IndianRupee className="h-4 w-4 text-muted-foreground" />,
+            value: `₹${(totalCost / 10000000).toFixed(2)} Cr`,
+            sub: "Estimated procurement cost",
+            delay: 0.2,
+          },
+          {
+            title: "Avg. Cost/Unit",
+            icon: <TrendingUp className="h-4 w-4 text-muted-foreground" />,
+            value: `₹${avgCostPerUnit.toLocaleString('en-IN')}`,
+            sub: "Per unit average",
+            delay: 0.3,
+          },
+          {
+            title: "Confidence",
+            icon: <Activity className="h-4 w-4 text-muted-foreground" />,
+            value: `${confidence.toFixed(1)}%`,
+            sub: "Prediction accuracy",
+            delay: 0.4,
+          },
+        ].map((card) => (
+          <motion.div
+            key={card.title}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: card.delay }}
+          >
+            <Card className="dashboard-card">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">{card.title}</CardTitle>
+                {card.icon}
+              </CardHeader>
+              <CardContent>
+                <div className="text-2xl font-bold">{card.value}</div>
+                <p className="text-xs text-muted-foreground">{card.sub}</p>
+              </CardContent>
+            </Card>
+          </motion.div>
+        ))}
       </div>
 
       {/* Charts */}
@@ -173,12 +146,7 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={barChartData}>
                     <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis
-                      dataKey="name"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                    />
+                    <XAxis dataKey="name" fontSize={12} tickLine={false} axisLine={false} />
                     <YAxis fontSize={12} tickLine={false} axisLine={false} />
                     <ChartTooltip content={<ChartTooltipContent />} />
                     <Bar dataKey="quantity" fill="hsl(var(--primary))" radius={4} />
@@ -265,9 +233,15 @@ export function MaterialPrediction({ project, showPredictionResults = false, pre
                           {material.category}
                         </span>
                       </td>
-                      <td className="py-3 px-4">{material.quantity.toLocaleString('en-IN')} {material.unit}</td>
-                      <td className="py-3 px-4">₹{Math.round(material.cost / material.quantity).toLocaleString('en-IN')}</td>
-                      <td className="py-3 px-4">₹{material.cost.toLocaleString('en-IN')}</td>
+                      <td className="py-3 px-4">
+                        {material.quantity.toLocaleString('en-IN')} {material.unit}
+                      </td>
+                      <td className="py-3 px-4">
+                        ₹{Math.round(material.cost / material.quantity).toLocaleString('en-IN')}
+                      </td>
+                      <td className="py-3 px-4">
+                        ₹{material.cost.toLocaleString('en-IN')}
+                      </td>
                     </motion.tr>
                   ))}
                 </tbody>
